@@ -14,8 +14,6 @@ import {
   Zap, 
   Bookmark, 
   Share2, 
-  GraduationCap, 
-  Users, 
   CheckCircle2, 
   ChevronDown, 
   BookOpen,
@@ -413,32 +411,6 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
                   <Volume2 className="w-4 h-4" />
                 </button>
 
-                {/* Pedagogical Tone Toggle */}
-                <button
-                  onClick={() => {
-                    const nextTone = pedagogicalTone === 'student' ? 'parent' : 'student';
-                    setPedagogicalTone(nextTone);
-                    storageService.saveSettings({ pedagogicalTone: nextTone });
-                  }}
-                  className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-semibold transition-all border active:scale-[0.98] ${
-                    pedagogicalTone === 'parent'
-                      ? 'bg-teal-500/10 border-teal-500/30 text-teal-800'
-                      : 'bg-school-blue/10 border-school-blue/20 text-school-blue hover:bg-school-blue/15'
-                  }`}
-                  title="Tonfall"
-                >
-                  {pedagogicalTone === 'student' ? (
-                    <>
-                      <GraduationCap className="w-3.5 h-3.5" />
-                      <span>{t.studentTone}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Users className="w-3.5 h-3.5" />
-                      <span>{t.parentTone}</span>
-                    </>
-                  )}
-                </button>
 
                 {/* Simplified Language Toggle */}
                 <button
