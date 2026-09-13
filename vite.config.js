@@ -9,11 +9,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['siegel_bunt.png', 'pwa_icon_192.png', 'pwa_icon_512.png', 'favicon.ico'],
+      includeAssets: ['siegel_bunt.png', 'pwa_icon_192.png', 'pwa_icon_512.png', 'apple-touch-icon.png', 'favicon.ico'],
       manifest: {
-        name: 'Heimbürgeschule Schul-Übersetzer',
-        short_name: 'Schul-Übersetzer',
-        description: 'Pädagogische Offline- & Online-Übersetzer App für die Staatliche Regelschule Heimbürgeschule Kahla',
+        name: 'Heimbürgeschule Schüler-Übersetzer',
+        short_name: 'Schüler-Übersetzer',
+        description: 'Pädagogische Offline- & Online-Übersetzer App für Schülerinnen und Schüler der Staatlichen Regelschule Heimbürgeschule Kahla',
         theme_color: '#0B7BA7',
         background_color: '#FFFBF5',
         display: 'standalone',
