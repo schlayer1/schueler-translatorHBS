@@ -30,14 +30,6 @@ import { speechService } from '../services/speechService';
 import { storageService } from '../services/storageService';
 import { getUIText } from '../data/uiTranslations';
 
-const CONTEXT_TEMPLATES = [
-  { label: 'Hausaufgaben', icon: '🎒', text: 'Bitte schreibt die Hausaufgabe für morgen in euer Hausaufgabenheft: Seite 42 Nummer 3.' },
-  { label: 'Elternbrief', icon: '✉️', text: 'Bitte gib diesen wichtigen Zettel deinen Eltern zur Unterschrift. Bringe ihn morgen wieder mit.' },
-  { label: 'Stundenplan', icon: '⏰', text: 'Wir wechseln jetzt den Raum für die nächste Stunde. Wir treffen uns in Raum 204.' },
-  { label: 'Mensa', icon: '🍎', text: 'Jetzt ist Mittagspause in der Mensa. Bitte stellt euch ruhig und ordentlich an.' },
-  { label: 'Krankenstation', icon: '🩺', text: 'Geht es dir nicht gut? Wo tut es weh? Wir rufen deine Eltern an.' },
-];
-
 export default function TranslatorView({ onOpenDialogue, isForcedOffline = false, initialPreset = null, onClearPreset }) {
   const supportedLanguages = useSupportedLanguages();
   const [sourceLang, setSourceLang] = useState('uk');
@@ -265,19 +257,28 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
 
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto px-4 pt-20 pb-28 gap-4">
-      {/* 1. Context Chips Carousel */}
-      <div className="flex flex-wrap gap-1.5 py-0.5">
-        {CONTEXT_TEMPLATES.map((item) => (
-          <button
-            key={item.label}
-            onClick={() => setSourceText(item.text)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 text-slate-700 border border-slate-200/80 text-xs font-semibold shadow-2xs hover:border-school-blue/40 hover:bg-school-blue/5 active:scale-[0.98] transition-all"
-          >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </div>
+      {/* 1. Student Situation Chips (In Muttersprache & typische Unterrichtssituationen) */}
+      {(() => {
+        const studentLang = studentProfile?.nativeLang || 'uk';
+        const t = getUIText(studentLang);
+        const chipsList = t.chips || [];
+
+        return (
+          <div className="flex flex-wrap gap-1.5 py-0.5">
+            {chipsList.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => setSourceText(item.text)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 text-slate-700 border border-slate-200/80 text-xs font-semibold shadow-2xs hover:border-school-blue/40 hover:bg-school-blue/5 active:scale-[0.98] transition-all"
+                title={item.text}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* 2. Language Selector Bar (Linear / Vercel Segmented Control) */}
       <div className="bg-white/90 backdrop-blur-md rounded-2xl p-2 shadow-[0_1px_3px_rgba(0,0,0,0.03),0_6px_16px_-6px_rgba(11,123,167,0.04)] border border-slate-200/80 flex items-center justify-between gap-2">
@@ -561,66 +562,73 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
         )}
 
         {/* Output Action Bar */}
-        <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleSpeak(translatedText, targetLang)}
-              disabled={!translatedText}
-              className="h-9 px-3.5 rounded-xl bg-school-blue hover:bg-school-blueDark text-white flex items-center gap-1.5 shadow-xs active:scale-[0.96] transition-all text-xs font-bold disabled:opacity-30"
-            >
-              <Volume2 className="w-4 h-4" />
-              <span>Anhören</span>
-            </button>
+        {(() => {
+          const studentLang = studentProfile?.nativeLang || 'uk';
+          const t = getUIText(studentLang);
 
-            {/* Speech Rate Indicator / Toggle */}
-            <button
-              onClick={() => {
-                const nextSpeed = speechSpeed === 1.0 ? 0.75 : speechSpeed === 0.75 ? 1.25 : 1.0;
-                setSpeechSpeed(nextSpeed);
-              }}
-              className="h-9 px-2.5 rounded-xl bg-white text-school-blue font-mono tabular-nums text-xs font-bold border border-slate-200/80 hover:border-slate-300 shadow-2xs active:scale-[0.96] transition-all"
-              title="Sprechgeschwindigkeit (Klicken zum Ändern)"
-            >
-              {speechSpeed}x
-            </button>
-          </div>
+          return (
+            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleSpeak(translatedText, targetLang)}
+                  disabled={!translatedText}
+                  className="h-9 px-3.5 rounded-xl bg-school-blue hover:bg-school-blueDark text-white flex items-center gap-1.5 shadow-xs active:scale-[0.96] transition-all text-xs font-bold disabled:opacity-30"
+                >
+                  <Volume2 className="w-4 h-4" />
+                  <span>{targetLang === 'de' ? t.listenGermanBtn : t.listenBtn}</span>
+                </button>
 
-          <div className="flex items-center gap-1">
-            {/* Bookmark button */}
-            <button
-              onClick={toggleBookmark}
-              disabled={!translatedText}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-[0.94] border shadow-2xs ${
-                isBookmarked
-                  ? 'bg-amber-500/15 text-amber-700 border-amber-400/40'
-                  : 'bg-white text-slate-500 hover:text-slate-800 border-slate-200/80 hover:border-slate-300'
-              }`}
-              title="Zur Lernkartei / Gemerkt"
-            >
-              <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-600' : ''}`} />
-            </button>
+                {/* Speech Rate Indicator / Toggle */}
+                <button
+                  onClick={() => {
+                    const nextSpeed = speechSpeed === 1.0 ? 0.75 : speechSpeed === 0.75 ? 1.25 : 1.0;
+                    setSpeechSpeed(nextSpeed);
+                  }}
+                  className="h-9 px-2.5 rounded-xl bg-white text-school-blue font-mono tabular-nums text-xs font-bold border border-slate-200/80 hover:border-slate-300 shadow-2xs active:scale-[0.96] transition-all"
+                  title="Sprechgeschwindigkeit (Klicken zum Ändern)"
+                >
+                  {speechSpeed}x
+                </button>
+              </div>
 
-            {/* Copy button */}
-            <button
-              onClick={handleCopy}
-              disabled={!translatedText}
-              className="w-9 h-9 rounded-xl bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/80 hover:border-slate-300 shadow-2xs"
-              title="Kopieren"
-            >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-            </button>
+              <div className="flex items-center gap-1">
+                {/* Bookmark button */}
+                <button
+                  onClick={toggleBookmark}
+                  disabled={!translatedText}
+                  className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-[0.94] border shadow-2xs ${
+                    isBookmarked
+                      ? 'bg-amber-500/15 text-amber-700 border-amber-400/40'
+                      : 'bg-white text-slate-500 hover:text-slate-800 border-slate-200/80 hover:border-slate-300'
+                  }`}
+                  title={isBookmarked ? t.favoritedBtn : t.favoriteBtn}
+                >
+                  <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-600' : ''}`} />
+                </button>
 
-            {/* Fullscreen presentation button */}
-            <button
-              onClick={() => setFullscreen(true)}
-              disabled={!translatedText}
-              className="w-9 h-9 rounded-xl bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/80 hover:border-slate-300 shadow-2xs"
-              title="Präsentationsmodus für iPad"
-            >
-              <Maximize2 className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+                {/* Copy button */}
+                <button
+                  onClick={handleCopy}
+                  disabled={!translatedText}
+                  className="w-9 h-9 rounded-xl bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/80 hover:border-slate-300 shadow-2xs"
+                  title={t.copyBtn}
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                </button>
+
+                {/* Fullscreen presentation button */}
+                <button
+                  onClick={() => setFullscreen(true)}
+                  disabled={!translatedText}
+                  className="w-9 h-9 rounded-xl bg-white text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/80 hover:border-slate-300 shadow-2xs"
+                  title={t.fullscreenBtn}
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
 
       {/* 5. DaZ Deutschlern-Tipp Banner (Personalisiert für den Schüler) */}

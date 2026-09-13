@@ -1,18 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Languages, BookOpen, Bookmark, SlidersHorizontal } from 'lucide-react';
-
-const TABS = [
-  { id: 'translate', label: 'Übersetzen', icon: Languages },
-  { id: 'phrases', label: 'Ich sage…', icon: BookOpen, badge: 'Sätze' },
-  { id: 'saved', label: 'Gemerkt', icon: Bookmark },
-  { id: 'settings', label: 'Optionen', icon: SlidersHorizontal },
-];
+import { storageService } from '../services/storageService';
+import { getUIText } from '../data/uiTranslations';
 
 export default function Navigation({ currentTab, onSelectTab }) {
+  const [studentLang, setStudentLang] = useState(() => storageService.getStudentProfile().nativeLang || 'uk');
+
+  useEffect(() => {
+    const handleProfileChange = (e) => {
+      const p = e.detail || storageService.getStudentProfile();
+      if (p.nativeLang) setStudentLang(p.nativeLang);
+    };
+    window.addEventListener('heimbuerge_student_profile_changed', handleProfileChange);
+    return () => {
+      window.removeEventListener('heimbuerge_student_profile_changed', handleProfileChange);
+    };
+  }, []);
+
+  const t = getUIText(studentLang);
+
+  const tabs = [
+    { id: 'translate', label: t.tabTranslate, icon: Languages },
+    { id: 'phrases', label: t.tabPhrases, icon: BookOpen, badge: t.tabPhrasesBadge },
+    { id: 'saved', label: t.tabSaved, icon: Bookmark },
+    { id: 'settings', label: t.tabSettings, icon: SlidersHorizontal },
+  ];
+
   return (
     <nav className="fixed bottom-0 w-full z-40 pb-safe bg-[#FFFBF5]/90 backdrop-blur-xl border-t border-slate-200/80 shadow-[0_-1px_3px_rgba(0,0,0,0.02),0_-8px_16px_-6px_rgba(11,123,167,0.03)]">
       <div className="max-w-md mx-auto flex items-center justify-around h-16 px-2">
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive = currentTab === tab.id;
           const Icon = tab.icon;
           return (
@@ -36,7 +53,7 @@ export default function Navigation({ currentTab, onSelectTab }) {
                   <span className="w-1.5 h-1.5 rounded-full bg-school-orange absolute -bottom-1.5"></span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight truncate max-w-[75px]">
+              <span className="text-[11px] mt-1 tracking-tight truncate max-w-[80px]">
                 {tab.label}
               </span>
             </button>

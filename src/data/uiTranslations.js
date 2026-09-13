@@ -1,8 +1,16 @@
-// Multilingual translations for the Student UI & Onboarding
+// Multilingual translations for the Student UI, Navigation, Actions & Quick Chips
 // Languages: de, uk, ru, en, ro, hu
 
 export const UI_TRANSLATIONS = {
   de: {
+    // Navigation
+    tabTranslate: "Übersetzen",
+    tabPhrases: "Ich sage…",
+    tabPhrasesBadge: "Sätze",
+    tabSaved: "Gemerkt",
+    tabSettings: "Optionen",
+
+    // Onboarding & Welcome
     selectLanguageTitle: "Wähle deine Sprache",
     selectLanguageSubtitle: "In welcher Sprache sprichst du am liebsten?",
     whatIsYourName: "Wie heißt du?",
@@ -19,13 +27,47 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Tippe auf den blauen Lautsprecher, höre die Aussprache und sprich nach.",
     cardPhrasesTitle: "Ich möchte sagen…",
     cardPhrasesDesc: "Wichtige Schulsätze für den Unterricht: Hilfe, Toilette, Unwohlsein oder Hausaufgaben.",
+    
+    // DaZ Learning Tip
     dazTipTitle: "Tipp zum Deutschlernen",
     dazTipText: "Höre dir die deutsche Übersetzung mit dem blauen Lautsprecher-Knopf an und sprich sie 2–3 Mal laut nach. Das hilft dir, im Unterricht schnell flüssig mitzureden!",
     dazTipPersonal: "Tipp für dich, {name}: Höre dir die deutsche Aussprache mit dem blauen Lautsprecher an und sprich sie 2–3 Mal laut nach. Du schaffst das!",
     hello: "Hallo",
     studentBadge: "Schüler",
+
+    // Translator Action Buttons
+    translateBtn: "Übersetzen",
+    translatingBtn: "Übersetze...",
+    listenBtn: "Anhören",
+    listenGermanBtn: "🇩🇪 Deutsch anhören",
+    copyBtn: "Kopieren",
+    copiedBtn: "Kopiert!",
+    clearBtn: "Löschen",
+    favoriteBtn: "Merken",
+    favoritedBtn: "Gemerkt",
+    fullscreenBtn: "Großansicht",
+    speechInputTooltip: "Sprechen",
+
+    // Student Quick Situation Chips (1-Klick Vorlagen im Übersetzer)
+    chips: [
+      { label: "Nicht verstanden", icon: "❓", text: "Entschuldigung, ich habe das nicht verstanden. Können Sie das bitte langsamer wiederholen?" },
+      { label: "Toilette", icon: "🚻", text: "Darf ich bitte kurz zur Toilette gehen?" },
+      { label: "Hilfe bei Aufgabe", icon: "🙋‍♂️", text: "Ich brauche bitte Hilfe bei dieser Aufgabe. Ich weiß nicht, was ich tun soll." },
+      { label: "Bauchweh / Krank", icon: "🩺", text: "Mir geht es gar nicht gut. Mein Kopf und mein Bauch tun weh." },
+      { label: "Buch vergessen", icon: "📖", text: "Ich habe leider mein Schulbuch zu Hause vergessen. Darf ich mit jemandem zusammen reinschauen?" },
+      { label: "Stift / Lineal leihen", icon: "✏️", text: "Kann mir bitte jemand einen Stift oder ein Lineal leihen?" },
+    ]
   },
+
   uk: {
+    // Navigation
+    tabTranslate: "Перекладач",
+    tabPhrases: "Фрази",
+    tabPhrasesBadge: "Урок",
+    tabSaved: "Збережене",
+    tabSettings: "Налаштування",
+
+    // Onboarding & Welcome
     selectLanguageTitle: "Обери свою мову",
     selectLanguageSubtitle: "Якою мовою тобі зручніше спілкуватися?",
     whatIsYourName: "Як тебе звати?",
@@ -42,13 +84,47 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Натискай синій динамік, слухай вимову та повторюй уголос.",
     cardPhrasesTitle: "Я хочу сказати…",
     cardPhrasesDesc: "Готові фрази для уроків: допомога з завданнями, вийти в туалет, погане самопочуття або зошит.",
+    
+    // DaZ Learning Tip
     dazTipTitle: "Порада для вивчення німецької",
     dazTipText: "Послухай німецький переклад за допомогою синього динаміка та повтори 2–3 рази вголос. Це допоможе тобі впевнено говорити на уроках!",
     dazTipPersonal: "Порада для тебе, {name}: Послухай вимову німецькою через синій динамік і повтори кілька разів уголос. У тебе все вийде!",
     hello: "Привіт",
     studentBadge: "Учень",
+
+    // Translator Action Buttons
+    translateBtn: "Перекласти",
+    translatingBtn: "Перекладаю...",
+    listenBtn: "Слухати",
+    listenGermanBtn: "🇩🇪 Слухати німецьку",
+    copyBtn: "Копіювати",
+    copiedBtn: "Скопійовано!",
+    clearBtn: "Очистити",
+    favoriteBtn: "Зберегти",
+    favoritedBtn: "Збережено",
+    fullscreenBtn: "На весь екран",
+    speechInputTooltip: "Говорити голосом",
+
+    // Student Quick Situation Chips (1-Klick Vorlagen im Übersetzer)
+    chips: [
+      { label: "Не зрозумів(-ла)", icon: "❓", text: "Вибачте, я не зрозумів(-ла). Чи можете ви повторити повільніше?" },
+      { label: "До туалету", icon: "🚻", text: "Чи можу я вийти до туалету, будь ласка?" },
+      { label: "Потрібна допомога", icon: "🙋‍♂️", text: "Мені потрібна допомога з цим завданням. Я не знаю, що робити." },
+      { label: "Погано почуваюся", icon: "🩺", text: "Мені погано. У мене болить голова та живіт." },
+      { label: "Забув(-ла) підручник", icon: "📖", text: "Я забув(-ла) підручник удома. Чи можу я подивитися разом з сусідом?" },
+      { label: "Позичити ручку", icon: "✏️", text: "Чи може хтось позичити мені ручку або лінійку, будь ласка?" },
+    ]
   },
+
   ru: {
+    // Navigation
+    tabTranslate: "Переводчик",
+    tabPhrases: "Фразы",
+    tabPhrasesBadge: "Урок",
+    tabSaved: "Сохранённое",
+    tabSettings: "Настройки",
+
+    // Onboarding & Welcome
     selectLanguageTitle: "Выбери свой язык",
     selectLanguageSubtitle: "На каком языке тебе удобнее общаться?",
     whatIsYourName: "Как тебя зовут?",
@@ -65,13 +141,47 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Нажимай синий динамик, слушай произношение и повторяй вслух.",
     cardPhrasesTitle: "Я хочу сказать…",
     cardPhrasesDesc: "Важные фразы для уроков: помощь, туалет, плохое самочувствие или забытая тетрадь.",
+    
+    // DaZ Learning Tip
     dazTipTitle: "Совет по изучению немецкого",
     dazTipText: "Послушай перевод на немецкий через синий динамик и повтори 2–3 раза вслух. Это поможет тебе быстрее заговорить на уроках!",
     dazTipPersonal: "Совет для тебя, {name}: Послушай произношение на немецком через синий динамик и повтори вслух. У тебя всё получится!",
     hello: "Привет",
     studentBadge: "Ученик",
+
+    // Translator Action Buttons
+    translateBtn: "Перевести",
+    translatingBtn: "Перевожу...",
+    listenBtn: "Слушать",
+    listenGermanBtn: "🇩🇪 Слушать немецкий",
+    copyBtn: "Копировать",
+    copiedBtn: "Скопировано!",
+    clearBtn: "Очистить",
+    favoriteBtn: "Сохранить",
+    favoritedBtn: "Сохранено",
+    fullscreenBtn: "На весь экран",
+    speechInputTooltip: "Говорить голосом",
+
+    // Student Quick Situation Chips (1-Klick Vorlagen im Übersetzer)
+    chips: [
+      { label: "Не понял(а)", icon: "❓", text: "Извините, я не понял(а). Не могли бы вы повторить медленнее?" },
+      { label: "В туалет", icon: "🚻", text: "Можно выйти в туалет, пожалуйста?" },
+      { label: "Нужна помощь", icon: "🙋‍♂️", text: "Мне нужна помощь с этим заданием. Я не знаю, что делать." },
+      { label: "Плохо себя чувствую", icon: "🩺", text: "Мне нехорошо. У меня болит голова и живот." },
+      { label: "Забыл(а) учебник", icon: "📖", text: "Я забыл(а) учебник дома. Можно мне посмотреть с соседом?" },
+      { label: "Одолжить ручку", icon: "✏️", text: "Кто-нибудь может одолжить мне ручку или линейку, пожалуйста?" },
+    ]
   },
+
   en: {
+    // Navigation
+    tabTranslate: "Translate",
+    tabPhrases: "Phrases",
+    tabPhrasesBadge: "Class",
+    tabSaved: "Saved",
+    tabSettings: "Settings",
+
+    // Onboarding & Welcome
     selectLanguageTitle: "Choose your language",
     selectLanguageSubtitle: "Which language do you prefer to speak?",
     whatIsYourName: "What is your name?",
@@ -88,13 +198,47 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Tap the blue speaker button, listen to the pronunciation, and repeat out loud.",
     cardPhrasesTitle: "I want to say…",
     cardPhrasesDesc: "Helpful classroom phrases: asking for help, restroom, feeling unwell, or homework.",
+    
+    // DaZ Learning Tip
     dazTipTitle: "Tip for learning German",
     dazTipText: "Listen to the German translation with the blue speaker button and repeat it out loud 2–3 times. This helps you speak fluently in class!",
     dazTipPersonal: "Tip for you, {name}: Listen to the German pronunciation with the blue speaker and repeat it out loud. You can do it!",
     hello: "Hello",
     studentBadge: "Student",
+
+    // Translator Action Buttons
+    translateBtn: "Translate",
+    translatingBtn: "Translating...",
+    listenBtn: "Listen",
+    listenGermanBtn: "🇩🇪 Listen to German",
+    copyBtn: "Copy",
+    copiedBtn: "Copied!",
+    clearBtn: "Clear",
+    favoriteBtn: "Save",
+    favoritedBtn: "Saved",
+    fullscreenBtn: "Full Screen",
+    speechInputTooltip: "Speak",
+
+    // Student Quick Situation Chips (1-Klick Vorlagen im Übersetzer)
+    chips: [
+      { label: "Didn't understand", icon: "❓", text: "Excuse me, I didn't understand that. Could you please repeat it more slowly?" },
+      { label: "Restroom", icon: "🚻", text: "May I please go to the restroom?" },
+      { label: "Need help", icon: "🙋‍♂️", text: "I need help with this task, please. I don't know what to do." },
+      { label: "Feeling unwell", icon: "🩺", text: "I'm not feeling well. My head and stomach hurt." },
+      { label: "Forgot my book", icon: "📖", text: "I forgot my textbook at home. May I look together with someone?" },
+      { label: "Borrow a pen", icon: "✏️", text: "Could someone please lend me a pen or a ruler?" },
+    ]
   },
+
   ro: {
+    // Navigation
+    tabTranslate: "Traducere",
+    tabPhrases: "Fraze utile",
+    tabPhrasesBadge: "Ore",
+    tabSaved: "Salvate",
+    tabSettings: "Opțiuni",
+
+    // Onboarding & Welcome
     selectLanguageTitle: "Alege limba ta",
     selectLanguageSubtitle: "În ce limbă preferi să vorbești?",
     whatIsYourName: "Cum te cheamă?",
@@ -111,13 +255,47 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Apasă pe difuzorul albastru, ascultă pronunția și repetă cu voce tare.",
     cardPhrasesTitle: "Vreau să spun…",
     cardPhrasesDesc: "Fraze utile pentru ore: ajutor la teme, baie, stare de rău sau rechizite.",
+    
+    // DaZ Learning Tip
     dazTipTitle: "Sfat pentru învățarea limbii germane",
     dazTipText: "Ascultă traducerea în germană cu butonul albastru de difuzor și repet-o de 2–3 ori cu voce tare. Te va ajuta să vorbești fluent la ore!",
     dazTipPersonal: "Sfat pentru tine, {name}: Ascultă pronunția în germană cu difuzorul albastru și repet-o cu voce tare. Vei reuși!",
     hello: "Salut",
     studentBadge: "Elev",
+
+    // Translator Action Buttons
+    translateBtn: "Tradu",
+    translatingBtn: "Se traduce...",
+    listenBtn: "Ascultă",
+    listenGermanBtn: "🇩🇪 Ascultă germana",
+    copyBtn: "Copiază",
+    copiedBtn: "Copiat!",
+    clearBtn: "Șterge",
+    favoriteBtn: "Salvează",
+    favoritedBtn: "Salvat",
+    fullscreenBtn: "Ecran complet",
+    speechInputTooltip: "Vorbește la microfon",
+
+    // Student Quick Situation Chips (1-Klick Vorlagen im Übersetzer)
+    chips: [
+      { label: "Nu am înțeles", icon: "❓", text: "Mă scuzați, nu am înțeles. Puteți vă rog să repetați mai rar?" },
+      { label: "La baie", icon: "🚻", text: "Pot să merg la baie, vă rog?" },
+      { label: "Am nevoie de ajutor", icon: "🙋‍♂️", text: "Am nevoie de ajutor la acest exercițiu. Nu știu ce trebuie să fac." },
+      { label: "Nu mă simt bine", icon: "🩺", text: "Nu mă simt deloc bine. Mă doare capul și burta." },
+      { label: "Am uitat cartea", icon: "📖", text: "Mi-am uitat manualul acasă. Pot să mă uit cu un coleg?" },
+      { label: "Împrumută un pix", icon: "✏️", text: "Îmi poate împrumuta cineva un pix sau o riglă, vă rog?" },
+    ]
   },
+
   hu: {
+    // Navigation
+    tabTranslate: "Fordító",
+    tabPhrases: "Mondatok",
+    tabPhrasesBadge: "Óra",
+    tabSaved: "Mentettek",
+    tabSettings: "Beállítások",
+
+    // Onboarding & Welcome
     selectLanguageTitle: "Válaszd ki a nyelved",
     selectLanguageSubtitle: "Milyen nyelven beszélsz a legszívesebben?",
     whatIsYourName: "Hogy hívnak?",
@@ -134,11 +312,36 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Koppints a kék hangszóró gombra, hallgasd meg a kiejtést és ismételd el hangosan.",
     cardPhrasesTitle: "Azt szeretném mondani…",
     cardPhrasesDesc: "Fontos mondatok az órákra: segítségkérés, mosdó, rossz közérzet vagy házi feladat.",
+    
+    // DaZ Learning Tip
     dazTipTitle: "Tipp a némettanuláshoz",
     dazTipText: "Hallgasd meg a német fordítást a kék hangszóróval, és ismételd el 2–3-szor hangosan. Ez segít abban, hogy gyorsan magabiztosan beszélj az órákon!",
     dazTipPersonal: "Tipp neked, {name}: Hallgasd meg a kiejtést a kék hangszóróval, és ismételd el hangosan. Ügyes leszel!",
     hello: "Szia",
     studentBadge: "Diák",
+
+    // Translator Action Buttons
+    translateBtn: "Fordítás",
+    translatingBtn: "Fordítás...",
+    listenBtn: "Meghallgatás",
+    listenGermanBtn: "🇩🇪 Német meghallgatása",
+    copyBtn: "Másolás",
+    copiedBtn: "Másolva!",
+    clearBtn: "Törlés",
+    favoriteBtn: "Mentés",
+    favoritedBtn: "Mentve",
+    fullscreenBtn: "Teljes képernyő",
+    speechInputTooltip: "Beszédfelismerés",
+
+    // Student Quick Situation Chips (1-Klick Vorlagen im Übersetzer)
+    chips: [
+      { label: "Nem értettem", icon: "❓", text: "Elnézést, nem értettem. Meg tudná ismételni lassabban, kérem?" },
+      { label: "Mosdóba menni", icon: "🚻", text: "Kimehetek a mosdóba, kérem?" },
+      { label: "Segítség kell", icon: "🙋‍♂️", text: "Segítségre van szükségem ezzel a feladattal. Nem tudom, mit kell tennem." },
+      { label: "Rosszul vagyok", icon: "🩺", text: "Egyáltalán nem érzem jól magam. Fáj a fejem és a hasam." },
+      { label: "Otthon maradt a könyvem", icon: "📖", text: "Otthon felejtettem a tankönyvemet. Benézhetek valaki mellé?" },
+      { label: "Tollat kérni kölcsön", icon: "✏️", text: "Tudna valaki kölcsönadni egy tollat vagy vonalzót, kérem?" },
+    ]
   }
 };
 
