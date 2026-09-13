@@ -43,8 +43,8 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Tippe auf den blauen Lautsprecher, höre die Aussprache und sprich nach.",
     cardPhrasesTitle: "Ich möchte sagen…",
     cardPhrasesDesc: "Wichtige Schulsätze für den Unterricht: Hilfe, Toilette, Unwohlsein oder Hausaufgaben.",
-    cardAiTitle: "Schul-KI",
-    cardAiDesc: "Automatisch für dich aktiviert.",
+    cardAiTitle: "Schul-KI & Offline",
+    cardAiDesc: "✨ = Schul-KI (Online mit Internet)\n📱 = Geräte-Speicher (100% Offline ohne Internet)",
     
     // DaZ Learning Tip
     dazTipTitle: "Tipp zum Deutschlernen",
@@ -157,8 +157,8 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Натискай синій динамік, слухай вимову та повторюй уголос.",
     cardPhrasesTitle: "Я хочу сказати…",
     cardPhrasesDesc: "Готові фрази для уроків: допомога з завданнями, вийти в туалет, погане самопочуття або зошит.",
-    cardAiTitle: "Шкільний ШІ",
-    cardAiDesc: "Автоматично активовано для тебе.",
+    cardAiTitle: "Шкільний ШІ та Офлайн",
+    cardAiDesc: "✨ = Шкільний ШІ (онлайн з інтернетом)\n📱 = Пам'ять пристрою (100% офлайн без інтернету)",
     
     // DaZ Learning Tip
     dazTipTitle: "Порада для вивчення німецької",
@@ -271,8 +271,8 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Нажимай синий динамик, слушай произношение и повторяй вслух.",
     cardPhrasesTitle: "Я хочу сказать…",
     cardPhrasesDesc: "Важные фразы для уроков: помощь, туалет, плохое самочувствие или забытая тетрадь.",
-    cardAiTitle: "Школьный ИИ",
-    cardAiDesc: "Автоматически активирован для тебя.",
+    cardAiTitle: "Школьный ИИ и Офлайн",
+    cardAiDesc: "✨ = Школьный ИИ (онлайн с интернетом)\n📱 = Память устройства (100% офлайн без интернета)",
     
     // DaZ Learning Tip
     dazTipTitle: "Совет по изучению немецкого",
@@ -385,8 +385,8 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Tap the blue speaker button, listen to the pronunciation, and repeat out loud.",
     cardPhrasesTitle: "I want to say…",
     cardPhrasesDesc: "Helpful classroom phrases: asking for help, restroom, feeling unwell, or homework.",
-    cardAiTitle: "School AI",
-    cardAiDesc: "Automatically active for you.",
+    cardAiTitle: "School AI & Offline",
+    cardAiDesc: "✨ = School AI (Online with internet)\n📱 = Device storage (100% Offline without internet)",
     
     // DaZ Learning Tip
     dazTipTitle: "Tip for learning German",
@@ -499,8 +499,8 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Apasă pe difuzorul albastru, ascultă pronunția și repetă cu voce tare.",
     cardPhrasesTitle: "Vreau să spun…",
     cardPhrasesDesc: "Fraze utile pentru ore: ajutor la teme, baie, stare de rău sau rechizite.",
-    cardAiTitle: "AI Școlar",
-    cardAiDesc: "Activat automat pentru tine.",
+    cardAiTitle: "AI Școlar & Offline",
+    cardAiDesc: "✨ = AI Școlar (online cu internet)\n📱 = Memorie dispozitiv (100% offline fără internet)",
     
     // DaZ Learning Tip
     dazTipTitle: "Sfat pentru învățarea limbii germane",
@@ -613,8 +613,8 @@ export const UI_TRANSLATIONS = {
     cardListenDesc: "Koppints a kék hangszóró gombra, hallgasd meg a kiejtést és ismételd el hangosan.",
     cardPhrasesTitle: "Azt szeretném mondani…",
     cardPhrasesDesc: "Fontos mondatok az órákra: segítségkérés, mosdó, rossz közérzet vagy házi feladat.",
-    cardAiTitle: "Iskolai MI",
-    cardAiDesc: "Automatikusan bekapcsolva.",
+    cardAiTitle: "Iskolai MI és Offline",
+    cardAiDesc: "✨ = Iskolai MI (online internettel)\n📱 = Készülék memóriája (100% offline internet nélkül)",
     
     // DaZ Learning Tip
     dazTipTitle: "Tipp a némettanuláshoz",

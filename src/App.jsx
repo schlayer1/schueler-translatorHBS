@@ -15,11 +15,8 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    // Show onboarding if never seen
-    const seen = storageService.isOnboardingSeen();
-    if (!seen) {
-      setShowOnboarding(true);
-    }
+    // Show onboarding on every app launch (since devices change between children)
+    setShowOnboarding(true);
   }, []);
 
   const handleTransferToTranslator = ({ sourceText, sourceLang }) => {

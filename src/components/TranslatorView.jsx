@@ -501,10 +501,23 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
-            <span className="text-[11px] font-mono tabular-nums font-semibold text-slate-400">
-              {isTranslating ? 'Übersetze...' : `${metaInfo.engine} (${metaInfo.duration})`}
-            </span>
+          <div className="flex items-center gap-1.5">
+            {isTranslating ? (
+              <span className="text-[11px] font-mono tabular-nums font-semibold text-slate-400">
+                ...
+              </span>
+            ) : translatedText ? (
+              <div 
+                className={`inline-flex items-center justify-center w-7 h-7 rounded-xl border text-sm shadow-2xs transition-transform active:scale-95 ${
+                  metaInfo.isOffline
+                    ? 'bg-slate-100/90 border-slate-200/90 text-slate-600'
+                    : 'bg-amber-50/90 border-amber-200/80 text-amber-600 shadow-amber-500/10'
+                }`}
+                title={metaInfo.isOffline ? 'Geräte-Speicher (Offline)' : 'Schul-KI (Online)'}
+              >
+                <span>{metaInfo.isOffline ? '📱' : '✨'}</span>
+              </div>
+            ) : null}
           </div>
         </div>
 
