@@ -315,8 +315,41 @@ export const speechService = {
     }
   },
 
-  // Natural Human-Like Speech via Device OS SpeechSynthesis (Fast, 100% Offline, Zero Network Lag)
-  speak({ text, lang = 'de-DE', rate = 1.0, onStart, onEnd, onError, onStatus }) {
+  // Natural Human-Like Speech (Online: Google HD Stream via /api/tts; Offline: Local System Synthesis)
+  speak({ text, lang = 'de-DE', rate = 1.0, onStart, onEnd, onError, onStatus, forceBrowserSynth = false }) {
+    this.stopSpeaking();
+    if (!text || !text.trim()) return;
+
+    const cleanText = text.trim();
+    const shortLang = lang.split('-')[0].toLowerCase();
+    const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+
+    // 1. Try Google HD-Stimme via our Vercel Serverless Endpoint (/api/tts)
+    // Delivers clear, human-sounding studio voice on ANY iPad/iPhone without requiring iOS Siri voice downloads!
+    if (!forceBrowserSynth && isOnline && cleanText.length < 800) {
+      const ttsUrl = `/api/tts?text=${encodeURIComponent(cleanText)}&lang=${shortLang}`;
+      onStatus?.({ engine: 'Google HD-Stimme (Natürlich)', isAI: true });
+
+      this.playAudioUrl(
+        ttsUrl,
+        rate,
+        onStart,
+        onEnd,
+        (playErr) => {
+          console.warn('[TTS] HD-Stream fehlgeschlagen, wechsle auf Systemstimme:', playErr);
+          onStatus?.({ engine: 'Geräte-Systemstimme (Fallback)', isAI: false });
+          this.speakWithBrowserSynth({ text: cleanText, lang, rate, onStart, onEnd, onError });
+        }
+      );
+      return;
+    }
+
+    // 2. Offline / Direct fallback
+    this.speakWithBrowserSynth({ text: cleanText, lang, rate, onStart, onEnd, onError, onStatus });
+  },
+
+  // Fallback: Local OS SpeechSynthesis
+  speakWithBrowserSynth({ text, lang = 'de-DE', rate = 1.0, onStart, onEnd, onError, onStatus }) {
     if (!text || !text.trim()) return;
 
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
@@ -324,7 +357,6 @@ export const speechService = {
       return;
     }
 
-    // 1. Cancel previous speech cleanly
     this.stopSpeaking();
 
     const cleanText = text.trim();
@@ -399,11 +431,6 @@ export const speechService = {
         onError?.(err);
       }
     }, 20);
-  },
-
-  // Backward-compatible alias
-  speakWithBrowserSynth(args) {
-    return this.speak(args);
   },
 
   stopSpeaking() {
