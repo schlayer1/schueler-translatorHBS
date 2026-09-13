@@ -180,130 +180,124 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
     });
   };
 
+  const t = getUIText(studentLang || 'uk');
+
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto px-4 pt-20 pb-28 gap-5">
       {/* Header */}
-      {(() => {
-        const t = getUIText(studentLang || 'uk');
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-xl font-extrabold text-school-blue flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[24px]">settings</span>
+            {t.settingsTitle}
+          </h1>
+          <p className="text-xs text-slate-500">
+            {t.settingsSubtitle}
+          </p>
+        </div>
 
-        return (
-          <>
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <h1 className="text-xl font-extrabold text-school-blue flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[24px]">settings</span>
-                  {t.settingsTitle}
-                </h1>
-                <p className="text-xs text-slate-500">
-                  {t.settingsSubtitle}
-                </p>
-              </div>
+        {onOpenOnboarding && (
+          <button
+            onClick={onOpenOnboarding}
+            className="h-9 px-3 rounded-xl bg-school-blue/10 hover:bg-school-blue/20 text-school-blue font-bold text-xs flex items-center gap-1.5 transition-all active:scale-[0.96] border border-school-blue/20"
+          >
+            <span className="material-symbols-outlined text-[16px]">language</span>
+            <span>{t.selectLanguageTitle}</span>
+          </button>
+        )}
+      </div>
 
-              {onOpenOnboarding && (
-                <button
-                  onClick={onOpenOnboarding}
-                  className="h-9 px-3 rounded-xl bg-school-blue/10 hover:bg-school-blue/20 text-school-blue font-bold text-xs flex items-center gap-1.5 transition-all active:scale-[0.96] border border-school-blue/20"
-                >
-                  <span className="material-symbols-outlined text-[16px]">language</span>
-                  <span>{t.selectLanguageTitle}</span>
-                </button>
-              )}
-            </div>
+      {/* School Badge Card */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex items-center gap-3.5 relative overflow-hidden">
+        <div className="w-14 h-14 rounded-full bg-school-blue/10 border border-school-blue/20 flex items-center justify-center shrink-0 p-1">
+          <img 
+            src="/siegel_bunt.png" 
+            alt="Heimbürgeschule" 
+            className="w-full h-full object-contain rounded-full"
+          />
+        </div>
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-extrabold text-slate-900 text-sm">
+              {t.welcomeSchool}
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-school-blue/10 text-school-blue text-[10px] font-bold">
+              Kahla
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {t.appSubtitle} (iPad, iPhone & Android)
+          </p>
+        </div>
+      </div>
 
-            {/* School Badge Card */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex items-center gap-3.5 relative overflow-hidden">
-              <div className="w-14 h-14 rounded-full bg-school-blue/10 border border-school-blue/20 flex items-center justify-center shrink-0 p-1">
-                <img 
-                  src="/siegel_bunt.png" 
-                  alt="Heimbürgeschule" 
-                  className="w-full h-full object-contain rounded-full"
-                />
-              </div>
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-extrabold text-slate-900 text-sm">
-                    {t.welcomeSchool}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-school-blue/10 text-school-blue text-[10px] font-bold">
-                    Kahla
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  {t.appSubtitle} (iPad, iPhone & Android)
-                </p>
-              </div>
-            </div>
+      {/* Schüler-Profil Card */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[18px]">account_circle</span>
+            {t.profileTitle}
+          </h2>
+          <button
+            type="button"
+            onClick={onOpenOnboarding}
+            className="text-[11px] font-bold text-school-orange hover:underline flex items-center gap-0.5"
+          >
+            <span>{t.profileRepeatOnboarding}</span>
+            <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+          </button>
+        </div>
 
-            {/* Schüler-Profil Card */}
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[18px]">account_circle</span>
-                  {t.profileTitle}
-                </h2>
-                <button
-                  type="button"
-                  onClick={onOpenOnboarding}
-                  className="text-[11px] font-bold text-school-orange hover:underline flex items-center gap-0.5"
-                >
-                  <span>{t.profileRepeatOnboarding}</span>
-                  <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-                </button>
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">
+              {t.profileNameLabel}
+            </label>
+            <input
+              type="text"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              placeholder="z. B. Artem"
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none"
+            />
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
-                    {t.profileNameLabel}
-                  </label>
-                  <input
-                    type="text"
-                    value={studentName}
-                    onChange={(e) => setStudentName(e.target.value)}
-                    placeholder="z. B. Artem"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
-                    {t.profileLangLabel}
-                  </label>
-                  <select
-                    value={studentLang}
-                    onChange={(e) => setStudentLang(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none bg-white"
-                  >
-                    <option value="uk">🇺🇦 Ukrainisch (Українська)</option>
-                    <option value="ru">🇷🇺 Russisch (Русский)</option>
-                    <option value="en">🇬🇧 Englisch (English)</option>
-                    <option value="ro">🇷🇴 Rumänisch (Română)</option>
-                    <option value="hu">🇭🇺 Ungarisch (Magyar)</option>
-                    <option value="de">🇩🇪 Deutsch</option>
-                    {installedLanguages.map(l => (
-                      <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </>
-        );
-      })()}
+          <div>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">
+              {t.profileLangLabel}
+            </label>
+            <select
+              value={studentLang}
+              onChange={(e) => setStudentLang(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none bg-white"
+            >
+              <option value="uk">🇺🇦 Ukrainisch (Українська)</option>
+              <option value="ru">🇷🇺 Russisch (Русский)</option>
+              <option value="en">🇬🇧 Englisch (English)</option>
+              <option value="ro">🇷🇴 Rumänisch (Română)</option>
+              <option value="hu">🇭🇺 Ungarisch (Magyar)</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              {installedLanguages.map(l => (
+                <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
 
       {/* 1. Offline & WLAN Modus */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
         <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
           <span className="material-symbols-outlined text-[18px]">wifi_off</span>
-          Offline-Betrieb & Netzwerk
+          {t.offlineNetworkTitle}
         </h2>
 
         {/* Force Offline Switch */}
         <div className="flex items-center justify-between py-1">
           <div className="pr-4">
-            <p className="text-xs font-bold text-slate-900">Offline-Modus erzwingen</p>
+            <p className="text-xs font-bold text-slate-900">{t.forceOfflineTitle}</p>
             <p className="text-[11px] text-slate-500">
-              Simuliert instabiles oder fehlendes Schul-WLAN. Nutzt rein das lokale Schul-Lexikon.
+              {t.forceOfflineDesc}
             </p>
           </div>
           <button
@@ -325,14 +319,14 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-800 flex items-center gap-1">
               <span className="material-symbols-outlined text-[16px] text-school-teal">offline_pin</span>
-              Installierte Offline-Sprachpakete
+              {t.offlinePacksTitle}
             </span>
             <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
-              100% Bereit
+              {t.ready100}
             </span>
           </div>
           <p className="text-[11px] text-slate-600">
-            Folgende Sprachen und Redemittel sind direkt auf diesem Gerät gesichert:
+            {t.offlinePacksDesc}
           </p>
           <div className="flex flex-wrap gap-1.5 pt-1">
             <span className="px-2.5 py-1 bg-white border border-slate-200 text-slate-800 rounded-full text-xs font-bold flex items-center gap-1 shadow-2xs">
@@ -352,7 +346,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
               <span className="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
             </span>
             <span className="px-2.5 py-1 bg-white border border-slate-200 text-slate-800 rounded-full text-xs font-bold flex items-center gap-1 shadow-2xs">
-              <span>📚 Schul-Lexikon</span>
+              <span>📚 {t.schoolLexicon}</span>
               <span className="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span>
             </span>
             {installedLanguages.map(l => (
@@ -362,7 +356,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                 <button
                   type="button"
                   onClick={() => handleUninstallLanguage(l.code, l.name)}
-                  title="Sprachpaket entfernen"
+                  title={t.deleteBtn}
                   className="hover:text-red-600 transition-colors ml-0.5"
                 >
                   <span className="material-symbols-outlined text-[14px]">close</span>
@@ -373,20 +367,20 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
         </div>
       </div>
 
-      {/* 2. Sprachpakete verwalten & erweitern (Variante 2) */}
+      {/* 2. Sprachpakete verwalten & erweitern */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3.5">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">language</span>
-            Weitere Sprachen installieren & verwalten
+            {t.moreLanguagesTitle}
           </h2>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-            Dynamischer Generator
+            {t.moreLanguagesBadge}
           </span>
         </div>
 
         <p className="text-xs text-slate-500 leading-relaxed">
-          Brauchen Kolleginnen oder Kollegen weitere Zielsprachen? Ein Klick genügt: Die App lädt einmalig die Übersetzungen für alle 29 Schul-Redemittel und Elternbriefe herunter und speichert sie fest auf diesem Gerät für die 100%ige Offline-Nutzung.
+          {t.moreLanguagesDesc}
         </p>
 
         {/* Status Toast */}
@@ -417,9 +411,9 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
             <div className="flex items-center justify-between text-xs font-bold text-school-blue">
               <span className="flex items-center gap-1.5">
                 <span className="w-3.5 h-3.5 border-2 border-school-blue border-t-transparent rounded-full animate-spin"></span>
-                <span>Installiere Sprachpaket {installProgress.name}...</span>
+                <span>Installiere {installProgress.name}...</span>
               </span>
-              <span>{installProgress.current} / {installProgress.total} Redemittel</span>
+              <span>{installProgress.current} / {installProgress.total}</span>
             </div>
             <div className="w-full h-2 bg-school-blue/10 rounded-full overflow-hidden">
               <div 
@@ -428,7 +422,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
               />
             </div>
             <p className="text-[11px] text-slate-500">
-              Redemittel & Vorlagen werden übersetzt und lokal im Browser gesichert...
+              {t.offlinePacksDesc}
             </p>
           </div>
         )}
@@ -436,7 +430,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
         {/* Quick Catalog */}
         <div className="flex flex-col gap-1.5">
           <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-            Beliebte Schul-Sprachen (1-Klick-Installation):
+            {t.popularLanguages}
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {POPULAR_LANGUAGES_CATALOG.map((item) => {
@@ -458,14 +452,14 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                     <div className="flex items-center justify-between pt-1 border-t border-slate-200/60">
                       <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-0.5">
                         <span className="material-symbols-outlined text-[13px]">check_circle</span>
-                        Installiert
+                        {t.installedBadge}
                       </span>
                       <button
                         type="button"
                         onClick={() => handleUninstallLanguage(item.code, item.name)}
                         className="text-[10px] text-red-500 hover:text-red-700 font-semibold"
                       >
-                        Löschen
+                        {t.deleteBtn}
                       </button>
                     </div>
                   ) : (
@@ -476,7 +470,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                       className="w-full py-1.5 px-2 rounded-lg bg-white hover:bg-school-blue hover:text-white border border-slate-200 hover:border-school-blue text-school-blue font-bold text-[11px] transition-all active:scale-[0.97] flex items-center justify-center gap-1 shadow-2xs disabled:opacity-50"
                     >
                       <span className="material-symbols-outlined text-[14px]">download</span>
-                      <span>Installieren</span>
+                      <span>{t.installBtn}</span>
                     </button>
                   )}
                 </div>
@@ -494,13 +488,13 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
               className="text-xs font-bold text-school-blue hover:underline flex items-center gap-1"
             >
               <span className="material-symbols-outlined text-[16px]">add_circle</span>
-              <span>Andere Sprache manuell hinzufügen...</span>
+              <span>{t.addCustomLangBtn}</span>
             </button>
           ) : (
             <div className="p-3.5 rounded-xl border border-school-blue/20 bg-slate-50 flex flex-col gap-2.5 animate-in fade-in duration-150">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-800">
-                  Beliebige Sprache installieren
+                  {t.installCustomTitle}
                 </span>
                 <button
                   type="button"
@@ -512,7 +506,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Code (ISO)</label>
+                  <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">{t.langCodeLabel}</label>
                   <input
                     type="text"
                     value={customLangInput.code}
@@ -522,7 +516,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Name</label>
+                  <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">{t.langNameLabel}</label>
                   <input
                     type="text"
                     value={customLangInput.name}
@@ -532,7 +526,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">Flagge</label>
+                  <label className="text-[10px] font-semibold text-slate-500 block mb-0.5">{t.langFlagLabel}</label>
                   <input
                     type="text"
                     value={customLangInput.flag}
@@ -556,18 +550,18 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                 className="py-2 px-3 rounded-lg bg-school-blue text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs hover:bg-school-blueDark transition-all disabled:opacity-50"
               >
                 <span className="material-symbols-outlined text-[16px]">download_for_offline</span>
-                <span>Paket jetzt generieren & installieren</span>
+                <span>{t.installCustomAction}</span>
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* 2. Schul-KI Status (Automatisch & Geschützt) */}
+      {/* 3. Schul-KI Status (Automatisch & Geschützt) */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
         <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
           <span className="material-symbols-outlined text-[18px]">psychology</span>
-          Schul-KI (Google Gemini)
+          {t.aiStatusTitle}
         </h2>
         <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-start gap-3">
           <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
@@ -575,26 +569,26 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs font-bold text-emerald-900">
-              Automatisch aktiviert & geschützt
+              {t.aiActiveTitle}
             </span>
             <p className="text-[11px] text-emerald-800/90 leading-relaxed">
-              Die KI-Übersetzung wird zentral und sicher von der Heimbürgeschule bereitgestellt. Du brauchst dich um keinen Schlüssel zu kümmern – die App ist sofort für dich startklar!
+              {t.aiActiveDesc}
             </p>
           </div>
         </div>
       </div>
 
-      {/* 3. Audio & Vorleseeinstellungen */}
+      {/* 4. Audio & Vorleseeinstellungen */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
         <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
           <span className="material-symbols-outlined text-[18px]">volume_up</span>
-          Sprachausgabe & Audio
+          {t.audioTitle}
         </h2>
 
         {/* Speed Slider */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-            <span>Vorlesegeschwindigkeit</span>
+            <span>{t.speedLabel}</span>
             <span className="text-school-blue font-extrabold">{playbackSpeed}x</span>
           </div>
           <input
@@ -607,18 +601,18 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
             className="w-full accent-school-blue h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer"
           />
           <div className="flex justify-between text-[10px] text-slate-400">
-            <span>0.75x (Langsam / Schulanfänger)</span>
-            <span>1.0x (Normal)</span>
-            <span>1.25x (Schnell)</span>
+            <span>{t.speedSlow}</span>
+            <span>{t.speedNormal}</span>
+            <span>{t.speedFast}</span>
           </div>
         </div>
 
         {/* Auto Pronounce */}
         <div className="flex items-center justify-between py-1 border-t border-slate-100 pt-2">
           <div className="pr-4">
-            <p className="text-xs font-bold text-slate-900">Automatisch vorlesen</p>
+            <p className="text-xs font-bold text-slate-900">{t.autoPronounceTitle}</p>
             <p className="text-[11px] text-slate-500">
-              Liest das Übersetzungsergebnis sofort nach Fertigstellung laut vor.
+              {t.autoPronounceDesc}
             </p>
           </div>
           <button
@@ -640,15 +634,15 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[16px] text-school-blue">record_voice_over</span>
-              Natürliche Stimmproben anhören
+              {t.voiceSamplesTitle}
             </span>
             <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-              HD-Systemstimmen (100% Offline & Zuverlässig)
+              {t.voiceSamplesBadge}
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Die App nutzt die hochwertige, native Sprach-Engine deines Geräts (Apple Siri / Android TTS). Das garantiert sofortige Sprachausgabe, funktioniert 100% ohne Internet und lässt sich beliebig oft wiederholen:
+            {t.voiceSamplesDesc}
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1">
@@ -680,12 +674,12 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                     <span className="material-symbols-outlined text-[16px]">
                       {isPlaying ? 'stop_circle' : 'volume_up'}
                     </span>
-                    <span>{isPlaying ? 'Stopp' : 'Hörprobe'}</span>
+                    <span>{isPlaying ? t.voiceStopBtn : t.voiceListenBtn}</span>
                   </span>
                   <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                     isPlaying ? 'bg-amber-600/50 text-white' : 'bg-emerald-50 text-emerald-800'
                   }`}>
-                    HD-Stimme
+                    HD
                   </span>
                 </button>
               );
@@ -704,10 +698,10 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
               </span>
               <div className="flex flex-col gap-0.5">
                 <span className="font-extrabold">
-                  Aktive Wiedergabe: {voiceStatus.engine}
+                  {t.activeVoiceLabel} {voiceStatus.engine}
                 </span>
                 <p className="text-[11px] text-slate-600">
-                  Wird in <strong>allen Tabs</strong> (1-Wege, 2-Wege-Dialog, Redemittel & Elternbriefe) genutzt.
+                  {t.activeVoiceUsedIn}
                 </p>
               </div>
             </div>
@@ -715,35 +709,28 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
         </div>
       </div>
 
-
-
       {/* Save Button */}
-      {(() => {
-        const t = getUIText(studentLang || 'uk');
-        return (
-          <button
-            onClick={handleSave}
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-school-blue to-school-teal text-white font-extrabold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-[20px]">
-              {savedSuccess ? 'check' : 'save'}
-            </span>
-            <span>{savedSuccess ? t.settingsSavedSuccess : t.saveSettingsBtn}</span>
-          </button>
-        );
-      })()}
+      <button
+        onClick={handleSave}
+        className="w-full py-3 rounded-2xl bg-gradient-to-r from-school-blue to-school-teal text-white font-extrabold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
+      >
+        <span className="material-symbols-outlined text-[20px]">
+          {savedSuccess ? 'check' : 'save'}
+        </span>
+        <span>{savedSuccess ? t.settingsSavedSuccess : t.saveSettingsBtn}</span>
+      </button>
 
-      {/* iPad / iPhone Installation Help Banner */}
+      {/* App Installation Help Banner */}
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-start gap-3 text-xs text-amber-900">
         <span className="material-symbols-outlined text-amber-600 text-[22px] shrink-0 mt-0.5">
           add_to_home_screen
         </span>
         <div className="flex flex-col gap-1 leading-relaxed">
           <span className="font-extrabold text-amber-950">
-            Tipp: Als App auf dem iPad / iPhone speichern
+            {t.appSaveTipTitle}
           </span>
           <p>
-            Tippe in Safari auf das Teilen-Symbol (Viereck mit Pfeil nach oben) und wähle <strong>„Zum Home-Bildschirm“</strong>. Die App erscheint dann wie eine vollwertige App mit Schulsiegel auf dem Display.
+            {t.appSaveTipDesc}
           </p>
         </div>
       </div>
