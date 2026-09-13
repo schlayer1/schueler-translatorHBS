@@ -28,6 +28,7 @@ import { SUPPORTED_LANGUAGES, FREQUENT_PAIRS, getLanguage, useSupportedLanguages
 import { translationManager } from '../services/translationManager';
 import { speechService } from '../services/speechService';
 import { storageService } from '../services/storageService';
+import { getUIText } from '../data/uiTranslations';
 
 const CONTEXT_TEMPLATES = [
   { label: 'Hausaufgaben', icon: '🎒', text: 'Bitte schreibt die Hausaufgabe für morgen in euer Hausaufgabenheft: Seite 42 Nummer 3.' },
@@ -69,15 +70,35 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
     }
   }, [initialPreset]);
 
-  // Load saved preferences
+  const [studentProfile, setStudentProfile] = useState(() => storageService.getStudentProfile());
+
+  // Load saved preferences & student profile
   useEffect(() => {
     const settings = storageService.getSettings();
     setSpeechSpeed(settings.playbackSpeed || 1.0);
     setSimplified(settings.simplifiedLanguage || false);
     setPedagogicalTone(settings.pedagogicalTone || 'student');
-    if (settings.preferredPair && !initialPreset) {
-      setTargetLang(settings.preferredPair);
+
+    const profile = storageService.getStudentProfile();
+    setStudentProfile(profile);
+    if (profile.nativeLang && !initialPreset) {
+      setSourceLang(profile.nativeLang);
+      setTargetLang('de');
     }
+
+    const handleProfileChanged = (e) => {
+      const updated = e.detail || storageService.getStudentProfile();
+      setStudentProfile(updated);
+      if (updated.nativeLang && !initialPreset) {
+        setSourceLang(updated.nativeLang);
+        setTargetLang('de');
+      }
+    };
+
+    window.addEventListener('heimbuerge_student_profile_changed', handleProfileChanged);
+    return () => {
+      window.removeEventListener('heimbuerge_student_profile_changed', handleProfileChanged);
+    };
   }, []);
 
   // Check if bookmarked
@@ -602,25 +623,37 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
         </div>
       </div>
 
-      {/* 5. DaZ Deutschlern-Tipp Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent rounded-2xl p-4 border border-amber-300/60 flex items-start gap-3.5 shadow-2xs">
-        <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-900 flex items-center justify-center shrink-0 mt-0.5">
-          <Lightbulb className="w-5 h-5 text-amber-800" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold text-amber-950">
-              Tipp zum Deutschlernen
-            </span>
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-200/80 text-amber-900 text-[9px] font-black uppercase">
-              DaZ
-            </span>
+      {/* 5. DaZ Deutschlern-Tipp Banner (Personalisiert für den Schüler) */}
+      {(() => {
+        const studentLang = studentProfile?.nativeLang || 'uk';
+        const t = getUIText(studentLang);
+        const hasName = Boolean(studentProfile?.name?.trim());
+        const greetingName = studentProfile?.name?.trim();
+
+        return (
+          <div className="relative overflow-hidden bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent rounded-2xl p-4 border border-amber-300/60 flex items-start gap-3.5 shadow-2xs">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-900 flex items-center justify-center shrink-0 mt-0.5">
+              <Lightbulb className="w-5 h-5 text-amber-800" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-amber-950">
+                  {hasName ? `Tipp zum Deutschlernen für ${greetingName}` : t.dazTipTitle}
+                </span>
+                <span className="px-1.5 py-0.2 rounded-full bg-amber-200/80 text-amber-900 text-[9px] font-black uppercase">
+                  DaZ
+                </span>
+              </div>
+              <p className="text-[11px] text-amber-900/90 leading-relaxed">
+                {hasName 
+                  ? t.dazTipPersonal.replace('{name}', greetingName)
+                  : t.dazTipText
+                }
+              </p>
+            </div>
           </div>
-          <p className="text-[11px] text-amber-900/90 leading-relaxed">
-            Höre dir die deutsche Übersetzung mit dem blauen Lautsprecher-Knopf an und sprich sie 2–3 Mal laut nach. Das hilft dir, im Unterricht schnell flüssig mitzureden!
-          </p>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* Fullscreen Presentation Modal for iPad */}
       {fullscreen && (

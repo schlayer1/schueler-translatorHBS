@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   OFFLINE_PACKS: 'heimbuerge_translator_offline_packs_v1',
   CUSTOM_PHRASES: 'heimbuerge_translator_custom_phrases_v1',
   ONBOARDING_SEEN: 'heimbuerge_translator_onboarding_seen_v1',
+  STUDENT_PROFILE: 'heimbuerge_translator_student_profile_v1',
   INSTALLED_LANGUAGES: 'heimbuerge_translator_installed_languages_v1',
   INSTALLED_PHRASES: 'heimbuerge_translator_installed_phrases_v1',
 };
@@ -183,6 +184,36 @@ export const storageService = {
       localStorage.setItem(STORAGE_KEYS.ONBOARDING_SEEN, seen ? 'true' : 'false');
     } catch (e) {
       console.error('Error saving onboarding status', e);
+    }
+  },
+
+  getStudentProfile() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.STUDENT_PROFILE);
+      return data ? JSON.parse(data) : { name: '', nativeLang: 'uk' };
+    } catch (e) {
+      console.error('Error reading student profile', e);
+      return { name: '', nativeLang: 'uk' };
+    }
+  },
+
+  saveStudentProfile({ name = '', nativeLang = 'uk' }) {
+    try {
+      const current = this.getStudentProfile();
+      const updated = {
+        ...current,
+        name: name.trim(),
+        nativeLang: nativeLang || current.nativeLang || 'uk',
+        updatedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(STORAGE_KEYS.STUDENT_PROFILE, JSON.stringify(updated));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('heimbuerge_student_profile_changed', { detail: updated }));
+      }
+      return updated;
+    } catch (e) {
+      console.error('Error saving student profile', e);
+      return null;
     }
   },
 

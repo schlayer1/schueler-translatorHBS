@@ -31,11 +31,19 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customLangInput, setCustomLangInput] = useState({ code: '', name: '', flag: '🌐' });
 
+  // Student Profile state
+  const [studentName, setStudentName] = useState('');
+  const [studentLang, setStudentLang] = useState('uk');
+
   useEffect(() => {
     const settings = storageService.getSettings();
     setPlaybackSpeed(settings.playbackSpeed || 1.0);
     setAutoPronounce(settings.autoPronounce || false);
     setInstalledLanguages(storageService.getInstalledLanguages());
+
+    const profile = storageService.getStudentProfile();
+    setStudentName(profile.name || '');
+    setStudentLang(profile.nativeLang || 'uk');
 
     const handleVoicesChanged = () => {
       setVoicesTick(t => t + 1);
@@ -138,6 +146,10 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
       playbackSpeed,
       autoPronounce,
     });
+    storageService.saveStudentProfile({
+      name: studentName,
+      nativeLang: studentLang,
+    });
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2000);
   };
@@ -213,6 +225,60 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
           <p className="text-xs text-slate-500 mt-0.5">
             Schul-Übersetzer für iPad, iPhone & Android
           </p>
+        </div>
+      </div>
+
+      {/* Schüler-Profil Card */}
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[18px]">account_circle</span>
+            Mein Schüler-Profil
+          </h2>
+          <button
+            type="button"
+            onClick={onOpenOnboarding}
+            className="text-[11px] font-bold text-school-orange hover:underline flex items-center gap-0.5"
+          >
+            <span>Sprach-Auswahl wiederholen</span>
+            <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">
+              Dein Vorname
+            </label>
+            <input
+              type="text"
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              placeholder="z. B. Artem"
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="text-[11px] font-bold text-slate-700 block mb-1">
+              Deine Muttersprache
+            </label>
+            <select
+              value={studentLang}
+              onChange={(e) => setStudentLang(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none bg-white"
+            >
+              <option value="uk">🇺🇦 Ukrainisch (Українська)</option>
+              <option value="ru">🇷🇺 Russisch (Русский)</option>
+              <option value="en">🇬🇧 Englisch (English)</option>
+              <option value="ro">🇷🇴 Rumänisch (Română)</option>
+              <option value="hu">🇭🇺 Ungarisch (Magyar)</option>
+              <option value="de">🇩🇪 Deutsch</option>
+              {installedLanguages.map(l => (
+                <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

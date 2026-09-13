@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Bookmark, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { storageService } from '../services/storageService';
 
 export default function Header({ currentTab, onSelectTab, isOffline }) {
   const [onlineStatus, setOnlineStatus] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [studentProfile, setStudentProfile] = useState(() => storageService.getStudentProfile());
 
   useEffect(() => {
     const handleOnline = () => setOnlineStatus(true);
     const handleOffline = () => setOnlineStatus(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+
+    const handleProfileChange = (e) => {
+      setStudentProfile(e.detail || storageService.getStudentProfile());
+    };
+    window.addEventListener('heimbuerge_student_profile_changed', handleProfileChange);
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('heimbuerge_student_profile_changed', handleProfileChange);
     };
   }, []);
 
@@ -52,13 +61,19 @@ export default function Header({ currentTab, onSelectTab, isOffline }) {
                 </span>
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[11px] font-bold text-school-orange tracking-wide">
                 Schüler-Übersetzer
               </span>
-              <span className="px-1.5 py-0.2 rounded-full bg-blue-100 text-school-blue text-[9px] font-extrabold uppercase">
-                Schüler
-              </span>
+              {studentProfile?.name?.trim() ? (
+                <span className="px-2 py-0.2 rounded-full bg-teal-100/90 text-school-tealDark text-[10px] font-bold flex items-center gap-1">
+                  <span>👋 {studentProfile.name.trim()}</span>
+                </span>
+              ) : (
+                <span className="px-1.5 py-0.2 rounded-full bg-blue-100 text-school-blue text-[9px] font-extrabold uppercase">
+                  Schüler
+                </span>
+              )}
             </div>
           </div>
         </div>
