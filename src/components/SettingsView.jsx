@@ -644,11 +644,11 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
             </span>
             <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-              Google HD Online + Offline Fallback
+              HD-Systemstimmen (100% Offline & Zuverlässig)
             </span>
           </div>
           <p className="text-[11px] text-slate-500 leading-relaxed">
-            Die App nutzt online Googles offizielle HD-Sprach-Engine für natürliche, wohlklingende Aussprache ohne Roboterklang. Offline greift sie automatisch auf die beste Systemstimme deines Geräts zu:
+            Die App nutzt die hochwertige, native Sprach-Engine deines Geräts (Apple Siri / Android TTS). Das garantiert sofortige Sprachausgabe, funktioniert 100% ohne Internet und lässt sich beliebig oft wiederholen:
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1">
@@ -685,7 +685,7 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
                   <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                     isPlaying ? 'bg-amber-600/50 text-white' : 'bg-emerald-50 text-emerald-800'
                   }`}>
-                    Google HD
+                    HD-Stimme
                   </span>
                 </button>
               );
