@@ -5,6 +5,7 @@ import { speechService } from '../services/speechService';
 import { SUPPORTED_LANGUAGES, BUILTIN_LANGUAGES } from '../data/languages';
 import { SCHOOL_PHRASES } from '../data/schoolPhrases';
 import { translationManager } from '../services/translationManager';
+import { getUIText } from '../data/uiTranslations';
 
 const POPULAR_LANGUAGES_CATALOG = [
   { code: 'ar', name: 'Arabisch', nativeName: 'العربية', flag: '🇸🇾', speechCode: 'ar-SA', greeting: 'مرحبا', placeholder: 'اكتب رسالة...' },
@@ -182,105 +183,113 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto px-4 pt-20 pb-28 gap-5">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div>
-          <h1 className="text-xl font-extrabold text-school-blue flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[24px]">settings</span>
-            Optionen & Offline-Verwaltung
-          </h1>
-          <p className="text-xs text-slate-500">
-            Konfiguration für die Heimbürgeschule Kahla
-          </p>
-        </div>
+      {(() => {
+        const t = getUIText(studentLang || 'uk');
 
-        {onOpenOnboarding && (
-          <button
-            onClick={onOpenOnboarding}
-            className="h-9 px-3 rounded-xl bg-school-blue/10 hover:bg-school-blue/20 text-school-blue font-bold text-xs flex items-center gap-1.5 transition-all active:scale-[0.96] border border-school-blue/20"
-          >
-            <span className="material-symbols-outlined text-[16px]">info</span>
-            <span>Begrüßungsbildschirm</span>
-          </button>
-        )}
-      </div>
+        return (
+          <>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h1 className="text-xl font-extrabold text-school-blue flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[24px]">settings</span>
+                  {t.settingsTitle}
+                </h1>
+                <p className="text-xs text-slate-500">
+                  {t.settingsSubtitle}
+                </p>
+              </div>
 
-      {/* School Badge Card */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex items-center gap-3.5 relative overflow-hidden">
-        <div className="w-14 h-14 rounded-full bg-school-blue/10 border border-school-blue/20 flex items-center justify-center shrink-0 p-1">
-          <img 
-            src="/siegel_bunt.png" 
-            alt="Heimbürgeschule" 
-            className="w-full h-full object-contain rounded-full"
-          />
-        </div>
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-extrabold text-slate-900 text-sm">
-              Staatliche Regelschule Heimbürgeschule
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-school-blue/10 text-school-blue text-[10px] font-bold">
-              Kahla
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Schul-Übersetzer für iPad, iPhone & Android
-          </p>
-        </div>
-      </div>
+              {onOpenOnboarding && (
+                <button
+                  onClick={onOpenOnboarding}
+                  className="h-9 px-3 rounded-xl bg-school-blue/10 hover:bg-school-blue/20 text-school-blue font-bold text-xs flex items-center gap-1.5 transition-all active:scale-[0.96] border border-school-blue/20"
+                >
+                  <span className="material-symbols-outlined text-[16px]">language</span>
+                  <span>{t.selectLanguageTitle}</span>
+                </button>
+              )}
+            </div>
 
-      {/* Schüler-Profil Card */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-[18px]">account_circle</span>
-            Mein Schüler-Profil
-          </h2>
-          <button
-            type="button"
-            onClick={onOpenOnboarding}
-            className="text-[11px] font-bold text-school-orange hover:underline flex items-center gap-0.5"
-          >
-            <span>Sprach-Auswahl wiederholen</span>
-            <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          </button>
-        </div>
+            {/* School Badge Card */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex items-center gap-3.5 relative overflow-hidden">
+              <div className="w-14 h-14 rounded-full bg-school-blue/10 border border-school-blue/20 flex items-center justify-center shrink-0 p-1">
+                <img 
+                  src="/siegel_bunt.png" 
+                  alt="Heimbürgeschule" 
+                  className="w-full h-full object-contain rounded-full"
+                />
+              </div>
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-extrabold text-slate-900 text-sm">
+                    {t.welcomeSchool}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-school-blue/10 text-school-blue text-[10px] font-bold">
+                    Kahla
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {t.appSubtitle} (iPad, iPhone & Android)
+                </p>
+              </div>
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-          <div>
-            <label className="text-[11px] font-bold text-slate-700 block mb-1">
-              Dein Vorname
-            </label>
-            <input
-              type="text"
-              value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
-              placeholder="z. B. Artem"
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none"
-            />
-          </div>
+            {/* Schüler-Profil Card */}
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-bold text-school-blue flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[18px]">account_circle</span>
+                  {t.profileTitle}
+                </h2>
+                <button
+                  type="button"
+                  onClick={onOpenOnboarding}
+                  className="text-[11px] font-bold text-school-orange hover:underline flex items-center gap-0.5"
+                >
+                  <span>{t.profileRepeatOnboarding}</span>
+                  <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+                </button>
+              </div>
 
-          <div>
-            <label className="text-[11px] font-bold text-slate-700 block mb-1">
-              Deine Muttersprache
-            </label>
-            <select
-              value={studentLang}
-              onChange={(e) => setStudentLang(e.target.value)}
-              className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none bg-white"
-            >
-              <option value="uk">🇺🇦 Ukrainisch (Українська)</option>
-              <option value="ru">🇷🇺 Russisch (Русский)</option>
-              <option value="en">🇬🇧 Englisch (English)</option>
-              <option value="ro">🇷🇴 Rumänisch (Română)</option>
-              <option value="hu">🇭🇺 Ungarisch (Magyar)</option>
-              <option value="de">🇩🇪 Deutsch</option>
-              {installedLanguages.map(l => (
-                <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    {t.profileNameLabel}
+                  </label>
+                  <input
+                    type="text"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    placeholder="z. B. Artem"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                    {t.profileLangLabel}
+                  </label>
+                  <select
+                    value={studentLang}
+                    onChange={(e) => setStudentLang(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold focus:border-school-blue focus:ring-2 focus:ring-school-blue/10 outline-none bg-white"
+                  >
+                    <option value="uk">🇺🇦 Ukrainisch (Українська)</option>
+                    <option value="ru">🇷🇺 Russisch (Русский)</option>
+                    <option value="en">🇬🇧 Englisch (English)</option>
+                    <option value="ro">🇷🇴 Rumänisch (Română)</option>
+                    <option value="hu">🇭🇺 Ungarisch (Magyar)</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                    {installedLanguages.map(l => (
+                      <option key={l.code} value={l.code}>{l.flag} {l.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      })()}
 
       {/* 1. Offline & WLAN Modus */}
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-school-border flex flex-col gap-3">
@@ -709,15 +718,20 @@ export default function SettingsView({ isForcedOffline, onToggleForceOffline, on
 
 
       {/* Save Button */}
-      <button
-        onClick={handleSave}
-        className="w-full py-3 rounded-2xl bg-gradient-to-r from-school-blue to-school-teal text-white font-extrabold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
-      >
-        <span className="material-symbols-outlined text-[20px]">
-          {savedSuccess ? 'check' : 'save'}
-        </span>
-        <span>{savedSuccess ? 'Einstellungen gespeichert!' : 'Einstellungen speichern'}</span>
-      </button>
+      {(() => {
+        const t = getUIText(studentLang || 'uk');
+        return (
+          <button
+            onClick={handleSave}
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-school-blue to-school-teal text-white font-extrabold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              {savedSuccess ? 'check' : 'save'}
+            </span>
+            <span>{savedSuccess ? t.settingsSavedSuccess : t.saveSettingsBtn}</span>
+          </button>
+        );
+      })()}
 
       {/* iPad / iPhone Installation Help Banner */}
       <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-start gap-3 text-xs text-amber-900">

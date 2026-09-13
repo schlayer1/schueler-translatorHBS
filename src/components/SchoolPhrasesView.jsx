@@ -29,6 +29,7 @@ import { SUPPORTED_LANGUAGES, getLanguage, useSupportedLanguages } from '../data
 import { speechService } from '../services/speechService';
 import { storageService } from '../services/storageService';
 import { translationManager } from '../services/translationManager';
+import { getUIText } from '../data/uiTranslations';
 
 const CATEGORY_ICONS = {
   all: BookOpen,
@@ -42,8 +43,9 @@ const CATEGORY_ICONS = {
 
 export default function SchoolPhrasesView({ onTransferToTranslator }) {
   const supportedLanguages = useSupportedLanguages();
+  const [studentProfile, setStudentProfile] = useState(() => storageService.getStudentProfile());
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [targetLang, setTargetLang] = useState('uk');
+  const [targetLang, setTargetLang] = useState(() => storageService.getStudentProfile().nativeLang || 'uk');
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedId, setCopiedId] = useState(null);
   const [playingId, setPlayingId] = useState(null);
@@ -53,6 +55,16 @@ export default function SchoolPhrasesView({ onTransferToTranslator }) {
   const [newGermanText, setNewGermanText] = useState('');
   const [newCategory, setNewCategory] = useState('verstehen');
   const [isTranslatingNew, setIsTranslatingNew] = useState(false);
+
+  useEffect(() => {
+    const handleProfile = (e) => {
+      const p = e.detail || storageService.getStudentProfile();
+      setStudentProfile(p);
+      if (p.nativeLang) setTargetLang(p.nativeLang);
+    };
+    window.addEventListener('heimbuerge_student_profile_changed', handleProfile);
+    return () => window.removeEventListener('heimbuerge_student_profile_changed', handleProfile);
+  }, []);
 
   const recognizerRef = useRef(null);
   const targetLangObj = getLanguage(targetLang);
@@ -241,74 +253,82 @@ export default function SchoolPhrasesView({ onTransferToTranslator }) {
   return (
     <div className="flex flex-col w-full max-w-4xl mx-auto px-4 pt-20 pb-28 gap-4">
       {/* Search & Language Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-        {/* Language Target Pill Selector */}
-        <div className="relative shrink-0 sm:w-48">
-          <select
-            value={targetLang}
-            onChange={(e) => setTargetLang(e.target.value)}
-            className="w-full h-10 pl-3 pr-8 rounded-xl bg-white border border-slate-200/80 text-slate-800 text-xs font-bold shadow-2xs appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-school-blue/20"
-          >
-            {supportedLanguages.filter(l => l.code !== 'de').map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.flag} Zielsprache: {l.name}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3.5 pointer-events-none" />
-        </div>
+      {(() => {
+        const t = getUIText(studentProfile?.nativeLang || 'uk');
 
-        {/* Live Filter / Search Input */}
-        <div className="relative flex-1 flex items-center bg-white rounded-xl border border-slate-200/80 shadow-2xs px-3 h-10 gap-2">
-          <Search className="w-4 h-4 text-slate-400 shrink-0" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Redemittel durchsuchen..."
-            className="w-full bg-transparent text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="p-1 text-slate-400 hover:text-slate-600 rounded-lg active:scale-[0.94]"
-              title="Suche leeren"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-          <button
-            onClick={toggleSearchSpeech}
-            className={`p-1.5 rounded-lg flex items-center justify-center transition-all active:scale-[0.94] ${
-              isSearchingVoice
-                ? 'bg-red-600 text-white animate-pulse'
-                : 'text-slate-400 hover:text-school-blue hover:bg-slate-100'
-            }`}
-            title={isSearchingVoice ? 'Aufnahme stoppen' : 'Suchbegriff per Stimme einsprechen'}
-          >
-            {isSearchingVoice ? <Square className="w-3.5 h-3.5 fill-white" /> : <Mic className="w-3.5 h-3.5" />}
-          </button>
-        </div>
-      </div>
+        return (
+          <>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              {/* Language Target Pill Selector */}
+              <div className="relative shrink-0 sm:w-48">
+                <select
+                  value={targetLang}
+                  onChange={(e) => setTargetLang(e.target.value)}
+                  className="w-full h-10 pl-3 pr-8 rounded-xl bg-white border border-slate-200/80 text-slate-800 text-xs font-bold shadow-2xs appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-school-blue/20"
+                >
+                  {supportedLanguages.filter(l => l.code !== 'de').map((l) => (
+                    <option key={l.code} value={l.code}>
+                      {l.flag} {l.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-3.5 pointer-events-none" />
+              </div>
 
-      {/* Header with Title & Add Phrase Action */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-bold text-slate-800">
-            Schul-Redemittel & Vorlagen
-          </h2>
-          <p className="text-xs text-slate-500">
-            Kopiere Sätze oder passe sie direkt im Übersetzer mit eigenen Zahlen/Namen an.
-          </p>
-        </div>
-        <button
-          onClick={() => setIsAddingPhrase(true)}
-          className="h-9 px-3 rounded-xl bg-school-blue text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs hover:bg-school-blueDark transition-all active:scale-[0.96]"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Eigenes Redemittel</span>
-        </button>
-      </div>
+              {/* Live Filter / Search Input */}
+              <div className="relative flex-1 flex items-center bg-white rounded-xl border border-slate-200/80 shadow-2xs px-3 h-10 gap-2">
+                <Search className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t.searchPhrasesPlaceholder}
+                  className="w-full bg-transparent text-xs font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="p-1 text-slate-400 hover:text-slate-600 rounded-lg active:scale-[0.94]"
+                    title={t.clearBtn}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  onClick={toggleSearchSpeech}
+                  className={`p-1.5 rounded-lg flex items-center justify-center transition-all active:scale-[0.94] ${
+                    isSearchingVoice
+                      ? 'bg-red-600 text-white animate-pulse'
+                      : 'text-slate-400 hover:text-school-blue hover:bg-slate-100'
+                  }`}
+                  title={isSearchingVoice ? 'Aufnahme stoppen' : t.speechInputTooltip}
+                >
+                  {isSearchingVoice ? <Square className="w-3.5 h-3.5 fill-white" /> : <Mic className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Header with Title & Add Phrase Action */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-bold text-slate-800">
+                  {t.phrasesTitle}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  {t.phrasesSubtitle}
+                </p>
+              </div>
+              <button
+                onClick={() => setIsAddingPhrase(true)}
+                className="h-9 px-3 rounded-xl bg-school-blue text-white text-xs font-bold flex items-center gap-1.5 shadow-2xs hover:bg-school-blueDark transition-all active:scale-[0.96]"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{t.addCustomPhraseBtn}</span>
+              </button>
+            </div>
+          </>
+        );
+      })()}
 
       {/* Modal / Dialog for creating custom phrase */}
       {isAddingPhrase && (
@@ -396,34 +416,53 @@ export default function SchoolPhrasesView({ onTransferToTranslator }) {
       )}
 
       {/* Category Pills */}
-      <div className="flex flex-wrap gap-1.5 py-0.5">
-        {SCHOOL_CATEGORIES.map((cat) => {
-          const isSelected = selectedCategory === cat.id;
-          const Icon = CATEGORY_ICONS[cat.id] || BookOpen;
-          return (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] ${
-                isSelected
-                  ? 'bg-school-blue text-white shadow-xs font-bold'
-                  : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:border-slate-300'
-              }`}
-            >
-              <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-school-blue'}`} />
-              <span className="sm:hidden">{cat.shortLabel || cat.label}</span>
-              <span className="hidden sm:inline">{cat.label}</span>
-              {cat.id === 'custom' && customPhrases.length > 0 && (
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isSelected ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
-                }`}>
-                  {customPhrases.length}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+      {(() => {
+        const t = getUIText(studentProfile?.nativeLang || 'uk');
+        const getCatLabel = (id) => {
+          switch(id) {
+            case 'all': return t.catAll;
+            case 'verstehen': return t.catVerstehen;
+            case 'bitten': return t.catBitten;
+            case 'gesundheit': return t.catGesundheit;
+            case 'material': return t.catMaterial;
+            case 'alltag': return t.catAlltag;
+            case 'custom': return t.catCustom;
+            default: return id;
+          }
+        };
+
+        return (
+          <div className="flex flex-wrap gap-1.5 py-0.5">
+            {SCHOOL_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategory === cat.id;
+              const Icon = CATEGORY_ICONS[cat.id] || BookOpen;
+              const label = getCatLabel(cat.id);
+
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] ${
+                    isSelected
+                      ? 'bg-school-blue text-white shadow-xs font-bold'
+                      : 'bg-white text-slate-600 border border-slate-200/80 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-school-blue'}`} />
+                  <span>{label}</span>
+                  {cat.id === 'custom' && customPhrases.length > 0 && (
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      isSelected ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      {customPhrases.length}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Phrase Cards List */}
       <div className="flex flex-col gap-3">
@@ -473,90 +512,96 @@ export default function SchoolPhrasesView({ onTransferToTranslator }) {
                 </div>
 
                 {/* Card Actions */}
-                <div className="flex items-center justify-between pt-1 border-t border-slate-100 gap-2 flex-wrap sm:flex-nowrap">
-                  <div className="flex items-center gap-1.5">
-                    {/* Audio Playback: Deutsch zum Lernen & Üben */}
-                    <button
-                      onClick={() => handleSpeakGerman(phrase)}
-                      className={`h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.96] ${
-                        playingId === `${phrase.id}_de`
-                          ? 'bg-school-teal text-white shadow-xs'
-                          : 'bg-school-teal/10 text-school-teal hover:bg-school-teal/20'
-                      }`}
-                      title="Deutsche Aussprache anhören und üben"
-                    >
-                      {playingId === `${phrase.id}_de` ? <Volume2 className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                      <span>🇩🇪 Deutsch anhören</span>
-                    </button>
+                {(() => {
+                  const t = getUIText(studentProfile?.nativeLang || 'uk');
 
-                    {/* Audio Playback: Eigene Muttersprache */}
-                    <button
-                      onClick={() => handleSpeakNative(phrase)}
-                      className={`h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.96] ${
-                        playingId === `${phrase.id}_native`
-                          ? 'bg-slate-700 text-white shadow-xs'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
-                      title={`In ${targetLangObj.name} anhören`}
-                    >
-                      {playingId === `${phrase.id}_native` ? <Volume2 className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                      <span>{targetLangObj.flag}</span>
-                    </button>
+                  return (
+                    <div className="flex items-center justify-between pt-1 border-t border-slate-100 gap-2 flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        {/* Audio Playback: Deutsch zum Lernen & Üben */}
+                        <button
+                          onClick={() => handleSpeakGerman(phrase)}
+                          className={`h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.96] ${
+                            playingId === `${phrase.id}_de`
+                              ? 'bg-school-teal text-white shadow-xs'
+                              : 'bg-school-teal/10 text-school-teal hover:bg-school-teal/20'
+                          }`}
+                          title="Deutsche Aussprache anhören und üben"
+                        >
+                          {playingId === `${phrase.id}_de` ? <Volume2 className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                          <span>{t.listenGermanPhrase}</span>
+                        </button>
 
-                    {/* Direct Transfer to Translator View */}
-                    {onTransferToTranslator && (
-                      <button
-                        onClick={() => onTransferToTranslator({ sourceText: phrase.de, sourceLang: 'de' })}
-                        className="h-8 px-2.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-school-orange text-xs font-bold flex items-center gap-1 transition-all active:scale-[0.96] border border-orange-200/60"
-                        title="Im Übersetzer anpassen"
-                      >
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                        <span>Im Übersetzer anpassen</span>
-                      </button>
-                    )}
-                  </div>
+                        {/* Audio Playback: Eigene Muttersprache */}
+                        <button
+                          onClick={() => handleSpeakNative(phrase)}
+                          className={`h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.96] ${
+                            playingId === `${phrase.id}_native`
+                              ? 'bg-slate-700 text-white shadow-xs'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                          title={`In ${targetLangObj.name} anhören`}
+                        >
+                          {playingId === `${phrase.id}_native` ? <Volume2 className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                          <span>{targetLangObj.flag}</span>
+                        </button>
 
-                  <div className="flex items-center gap-1">
-                    {/* Bilingual Copy (DE + Target) */}
-                    <button
-                      onClick={() => handleCopyBilingual(phrase)}
-                      className="h-8 px-2.5 rounded-lg bg-slate-100/80 hover:bg-slate-200/80 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.94] border border-slate-200/60"
-                      title="Zweisprachig kopieren (Deutsch + Zielsprache)"
-                    >
-                      {isCopied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-emerald-700">Kopiert</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5 text-slate-500" />
-                          <span>Kopieren</span>
-                        </>
-                      )}
-                    </button>
+                        {/* Direct Transfer to Translator View */}
+                        {onTransferToTranslator && (
+                          <button
+                            onClick={() => onTransferToTranslator({ sourceText: phrase.de, sourceLang: 'de' })}
+                            className="h-8 px-2.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-school-orange text-xs font-bold flex items-center gap-1 transition-all active:scale-[0.96] border border-orange-200/60"
+                            title={t.openInTranslator}
+                          >
+                            <ArrowUpRight className="w-3.5 h-3.5" />
+                            <span>{t.openInTranslator}</span>
+                          </button>
+                        )}
+                      </div>
 
-                    {/* Favorite / Bookmark */}
-                    <button
-                      onClick={() => handleBookmark(phrase)}
-                      className="w-8 h-8 rounded-lg bg-slate-100/80 hover:bg-amber-100 text-slate-600 hover:text-amber-700 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/60"
-                      title="Zu Favoriten hinzufügen"
-                    >
-                      <Bookmark className="w-3.5 h-3.5" />
-                    </button>
+                      <div className="flex items-center gap-1">
+                        {/* Bilingual Copy (DE + Target) */}
+                        <button
+                          onClick={() => handleCopyBilingual(phrase)}
+                          className="h-8 px-2.5 rounded-lg bg-slate-100/80 hover:bg-slate-200/80 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-[0.94] border border-slate-200/60"
+                          title={t.bilingualCopy}
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <span className="text-emerald-700">{t.copiedBtn}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-slate-500" />
+                              <span>{t.copyBtn}</span>
+                            </>
+                          )}
+                        </button>
 
-                    {/* Delete Custom Phrase */}
-                    {phrase.isCustom && (
-                      <button
-                        onClick={() => handleDeleteCustom(phrase.id)}
-                        className="w-8 h-8 rounded-lg bg-slate-100/80 hover:bg-red-100 text-slate-400 hover:text-red-600 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/60"
-                        title="Eigenes Redemittel löschen"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                        {/* Favorite / Bookmark */}
+                        <button
+                          onClick={() => handleBookmark(phrase)}
+                          className="w-8 h-8 rounded-lg bg-slate-100/80 hover:bg-slate-200/80 text-slate-500 hover:text-amber-700 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/60"
+                          title={t.favoriteBtn}
+                        >
+                          <Bookmark className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Delete Custom Phrase */}
+                        {phrase.isCustom && (
+                          <button
+                            onClick={() => handleDeleteCustom(phrase.id)}
+                            className="w-8 h-8 rounded-lg bg-slate-100/80 hover:bg-red-100 text-slate-400 hover:text-red-600 flex items-center justify-center transition-all active:scale-[0.94] border border-slate-200/60"
+                            title={t.clearBtn}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             );
           })

@@ -328,7 +328,7 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
       <div className="flex items-center justify-center gap-1.5 flex-wrap">
         <span className="text-xs font-semibold text-slate-400 flex items-center gap-1 mr-1">
           <Zap className="w-3.5 h-3.5 text-school-orange" />
-          Häufig:
+          {getUIText(studentProfile?.nativeLang || 'uk').frequentPairsLabel}
         </span>
         {FREQUENT_PAIRS.map((pair) => {
           const isSelected = sourceLang === pair.source && targetLang === pair.target;
@@ -396,97 +396,100 @@ export default function TranslatorView({ onOpenDialogue, isForcedOffline = false
         />
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
-          <div className="flex items-center gap-2">
-            {/* Listen Source */}
-            <button
-              onClick={() => handleSpeak(sourceText, sourceLang)}
-              disabled={!sourceText}
-              className="w-9 h-9 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 disabled:opacity-30 flex items-center justify-center text-slate-700 transition-all border border-slate-200/60 active:scale-[0.96]"
-              title="Vorlesen"
-            >
-              <Volume2 className="w-4 h-4" />
-            </button>
+        {(() => {
+          const studentLang = studentProfile?.nativeLang || 'uk';
+          const t = getUIText(studentLang);
 
-            {/* Pedagogical Tone Toggle */}
-            <button
-              onClick={() => {
-                const nextTone = pedagogicalTone === 'student' ? 'parent' : 'student';
-                setPedagogicalTone(nextTone);
-                storageService.saveSettings({ pedagogicalTone: nextTone });
-              }}
-              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-semibold transition-all border active:scale-[0.98] ${
-                pedagogicalTone === 'parent'
-                  ? 'bg-teal-500/10 border-teal-500/30 text-teal-800'
-                  : 'bg-school-blue/10 border-school-blue/20 text-school-blue hover:bg-school-blue/15'
-              }`}
-              title="Wechselt den pädagogischen Tonfall"
-            >
-              {pedagogicalTone === 'student' ? (
-                <>
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  <span>Schüler-Ton</span>
-                </>
-              ) : (
-                <>
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Eltern-Ton</span>
-                </>
-              )}
-            </button>
+          return (
+            <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
+              <div className="flex items-center gap-2">
+                {/* Listen Source */}
+                <button
+                  onClick={() => handleSpeak(sourceText, sourceLang)}
+                  disabled={!sourceText}
+                  className="w-9 h-9 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 disabled:opacity-30 flex items-center justify-center text-slate-700 transition-all border border-slate-200/60 active:scale-[0.96]"
+                  title={t.listenSourceBtn}
+                >
+                  <Volume2 className="w-4 h-4" />
+                </button>
 
-            {/* Simplified Language Toggle */}
-            <button
-              onClick={() => setSimplified(!simplified)}
-              className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-semibold transition-all border active:scale-[0.98] ${
-                simplified
-                  ? 'bg-amber-500/15 border-amber-400/40 text-amber-800'
-                  : 'bg-slate-100/80 border-slate-200/60 text-slate-600 hover:bg-slate-200/80'
-              }`}
-              title="Formuliert in kindgerechte, einfache Sprache um"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Vereinfacht</span>
-            </button>
-          </div>
+                {/* Pedagogical Tone Toggle */}
+                <button
+                  onClick={() => {
+                    const nextTone = pedagogicalTone === 'student' ? 'parent' : 'student';
+                    setPedagogicalTone(nextTone);
+                    storageService.saveSettings({ pedagogicalTone: nextTone });
+                  }}
+                  className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-semibold transition-all border active:scale-[0.98] ${
+                    pedagogicalTone === 'parent'
+                      ? 'bg-teal-500/10 border-teal-500/30 text-teal-800'
+                      : 'bg-school-blue/10 border-school-blue/20 text-school-blue hover:bg-school-blue/15'
+                  }`}
+                  title="Tonfall"
+                >
+                  {pedagogicalTone === 'student' ? (
+                    <>
+                      <GraduationCap className="w-3.5 h-3.5" />
+                      <span>{t.studentTone}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-3.5 h-3.5" />
+                      <span>{t.parentTone}</span>
+                    </>
+                  )}
+                </button>
 
-          {/* Action Buttons: Voice Input & Translate Trigger */}
-          <div className="flex items-center gap-2">
-            {/* Voice Input (Microphone) */}
-            <div className="relative flex items-center justify-center">
-              {isRecording && (
-                <span className="absolute w-12 h-12 rounded-xl bg-red-500/30 animate-ping pointer-events-none"></span>
-              )}
-              <button
-                onClick={toggleSpeechRecognition}
-                aria-label="Sprachaufnahme"
-                className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm transition-all z-10 active:scale-[0.92] ${
-                  isRecording
-                    ? 'bg-red-600 ring-2 ring-red-300 animate-pulse'
-                    : 'bg-school-orange hover:bg-school-orangeDark shadow-xs'
-                }`}
-                title={isRecording ? 'Aufnahme stoppen' : 'Aufnahme starten'}
-              >
-                {isRecording ? <Square className="w-3.5 h-3.5 fill-white" /> : <Mic className="w-4 h-4" />}
-              </button>
+                {/* Simplified Language Toggle */}
+                <button
+                  onClick={() => setSimplified(!simplified)}
+                  className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-xs font-semibold transition-all border active:scale-[0.98] ${
+                    simplified
+                      ? 'bg-amber-500/15 border-amber-400/40 text-amber-800'
+                      : 'bg-slate-100/80 border-slate-200/60 text-slate-600 hover:bg-slate-200/80'
+                  }`}
+                  title="Formulierung"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{t.simplified}</span>
+                </button>
+              </div>
+
+              {/* Action Buttons: Voice Input & Translate Trigger */}
+              <div className="flex items-center gap-2">
+                {/* Voice Input (Microphone) */}
+                <div className="relative flex items-center justify-center">
+                  {isRecording && (
+                    <span className="absolute w-12 h-12 rounded-xl bg-red-500/30 animate-ping pointer-events-none"></span>
+                  )}
+                  <button
+                    onClick={toggleSpeechRecognition}
+                    aria-label={t.speechInputTooltip}
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-sm transition-all z-10 active:scale-[0.92] ${
+                      isRecording
+                        ? 'bg-red-600 ring-2 ring-red-300 animate-pulse'
+                        : 'bg-school-orange hover:bg-school-orangeDark shadow-xs'
+                    }`}
+                    title={isRecording ? 'Aufnahme stoppen' : t.speechInputTooltip}
+                  >
+                    {isRecording ? <Square className="w-3.5 h-3.5 fill-white" /> : <Mic className="w-4 h-4" />}
+                  </button>
+                </div>
+
+                {/* Manual Translate Trigger Button */}
+                <button
+                  onClick={handleTranslateClick}
+                  disabled={isTranslating || !sourceText.trim()}
+                  aria-label={t.translateBtn}
+                  className="w-9 h-9 rounded-xl bg-school-blue hover:bg-school-blueDark text-white shadow-xs active:scale-[0.92] transition-all flex items-center justify-center disabled:opacity-40"
+                  title={`${t.translateBtn} (Enter)`}
+                >
+                  <Languages className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-
-            {/* Manual Translate Trigger Button (Icon-only to fit iPhone display width) */}
-            <button
-              onClick={handleTranslateClick}
-              disabled={isTranslating || !sourceText.trim()}
-              aria-label="Übersetzen"
-              className="w-9 h-9 rounded-xl bg-school-blue hover:bg-school-blueDark text-white shadow-xs active:scale-[0.92] transition-all flex items-center justify-center disabled:opacity-40"
-              title="Übersetzung starten (Enter)"
-            >
-              {isTranslating ? (
-                <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-              ) : (
-                <Languages className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-        </div>
+          );
+        })()}
       </div>
 
       {/* 4. Live Translation Output Card (Apple macOS / Linear Clean Finish) */}

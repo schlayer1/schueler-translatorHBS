@@ -10,7 +10,7 @@ import {
   Check
 } from 'lucide-react';
 import { storageService } from '../services/storageService';
-import { getUIText } from '../data/uiTranslations';
+import { getUIText, ROTATING_GREETINGS } from '../data/uiTranslations';
 
 const ONBOARDING_LANGUAGES = [
   { code: 'uk', name: 'Українська', flag: '🇺🇦', sub: 'Ukrainisch' },
@@ -25,6 +25,16 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
   const [step, setStep] = useState(initialStep); // 1: Language, 2: Name, 3: Welcome Tour
   const [selectedLang, setSelectedLang] = useState('uk');
   const [studentName, setStudentName] = useState('');
+  const [greetingIndex, setGreetingIndex] = useState(0);
+
+  // Rotating Hello / Welcome banner in step 1 (like Apple Setup)
+  useEffect(() => {
+    if (!isOpen || step !== 1) return;
+    const interval = setInterval(() => {
+      setGreetingIndex((prev) => (prev + 1) % ROTATING_GREETINGS.length);
+    }, 2200);
+    return () => clearInterval(interval);
+  }, [isOpen, step]);
 
   useEffect(() => {
     if (isOpen) {
@@ -32,11 +42,13 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
       if (profile.nativeLang) setSelectedLang(profile.nativeLang);
       if (profile.name) setStudentName(profile.name);
       setStep(initialStep || 1);
+      setGreetingIndex(0); // Standard starts with Ukrainian
     }
   }, [isOpen, initialStep]);
 
   if (!isOpen) return null;
 
+  const currentGreeting = ROTATING_GREETINGS[greetingIndex];
   const t = getUIText(selectedLang);
 
   const handleSelectLanguage = (langCode) => {
@@ -82,7 +94,12 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
                 </span>
               </div>
               <h2 className="text-base font-extrabold text-white leading-tight">
-                {step === 1 && t.selectLanguageTitle}
+                {step === 1 && (
+                  <span className="inline-flex items-center gap-1.5 transition-all duration-300">
+                    <span>{currentGreeting.flag}</span>
+                    <span>{currentGreeting.text}</span>
+                  </span>
+                )}
                 {step === 2 && t.whatIsYourName}
                 {step === 3 && (studentName.trim() ? `${t.welcomeTitle}, ${studentName.trim()}! 👋` : `${t.welcomeTitle}! 👋`)}
               </h2>
@@ -107,12 +124,22 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
 
         {/* Modal Body */}
         <div className="p-5 overflow-y-auto space-y-4">
-          {/* STEP 1: Language Selection */}
+          {/* STEP 1: Language Selection with Apple-Style Rotating Welcome */}
           {step === 1 && (
-            <div className="space-y-3">
-              <p className="text-slate-600 text-xs text-center">
-                {t.selectLanguageSubtitle}
-              </p>
+            <div className="space-y-3.5">
+              {/* Rotating Apple-Style Greeting Banner */}
+              <div className="bg-gradient-to-br from-school-blue/10 via-school-teal/5 to-amber-500/10 p-4 rounded-2xl border border-school-blue/20 text-center relative overflow-hidden shadow-inner">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-school-blue mb-1">
+                  {currentGreeting.name}
+                </p>
+                <div className="text-2xl font-black text-slate-900 tracking-tight transition-all duration-300 flex items-center justify-center gap-2">
+                  <span>{currentGreeting.flag}</span>
+                  <span>{currentGreeting.text}!</span>
+                </div>
+                <p className="text-xs text-slate-600 mt-1.5 font-medium">
+                  {getUIText(currentGreeting.lang).selectLanguageSubtitle}
+                </p>
+              </div>
 
               <div className="grid grid-cols-2 gap-2.5 pt-1">
                 {ONBOARDING_LANGUAGES.map((lang) => {
@@ -154,12 +181,7 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
                   {t.whatIsYourName}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  {selectedLang === 'uk' && "Введи своє ім'я, щоб ми могли вітати тебе особисто."}
-                  {selectedLang === 'ru' && "Введи своё имя, чтобы мы могли обращаться к тебе лично."}
-                  {selectedLang === 'en' && "Enter your first name so we can address you personally."}
-                  {selectedLang === 'ro' && "Introdu prenumele tău pentru a te saluta personal."}
-                  {selectedLang === 'hu' && "Add meg a nevedet, hogy személyesen üdvözölhessünk."}
-                  {selectedLang === 'de' && "Gib deinen Vornamen ein, damit die App dich persönlich ansprechen kann."}
+                  {t.nameDescription}
                 </p>
               </div>
 
@@ -182,7 +204,7 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
                   onClick={() => setStep(1)}
                   className="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
                 >
-                  Zurück
+                  {t.backBtn}
                 </button>
                 <button
                   onClick={handleSaveNameAndProceed}
@@ -246,10 +268,10 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
                   </div>
                   <div className="flex flex-col gap-0.5">
                     <span className="font-bold text-xs text-slate-900">
-                      Schul-KI
+                      {t.cardAiTitle}
                     </span>
                     <p className="text-[11px] text-slate-600 leading-normal">
-                      Automatisch aktiviert für dich.
+                      {t.cardAiDesc}
                     </p>
                   </div>
                 </div>
@@ -265,7 +287,7 @@ export default function OnboardingModal({ isOpen, onClose, initialStep = 1 }) {
               onClick={() => setStep(step - 1)}
               className="px-3 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
             >
-              Zurück
+              {t.backBtn}
             </button>
           ) : (
             <div />

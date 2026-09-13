@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bookmark, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { storageService } from '../services/storageService';
+import { getUIText } from '../data/uiTranslations';
 
 export default function Header({ currentTab, onSelectTab, isOffline }) {
   const [onlineStatus, setOnlineStatus] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
@@ -79,33 +80,38 @@ export default function Header({ currentTab, onSelectTab, isOffline }) {
         </div>
 
         {/* Quick Header Actions: Gemerkt & Optionen */}
-        <div className="flex items-center gap-1.5">
-          <button 
-            onClick={() => onSelectTab('saved')}
-            className={`flex items-center gap-1.5 px-3 h-8.5 rounded-xl border transition-all active:scale-[0.98] text-xs font-semibold shadow-2xs ${
-              currentTab === 'saved'
-                ? 'bg-amber-500/15 border-amber-400/50 text-amber-800'
-                : 'bg-white/80 border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-            }`}
-            title="Gemerkt & Favoriten"
-          >
-            <Bookmark className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Gemerkt</span>
-          </button>
+        {(() => {
+          const t = getUIText(studentProfile?.nativeLang || 'uk');
+          return (
+            <div className="flex items-center gap-1.5">
+              <button 
+                onClick={() => onSelectTab('saved')}
+                className={`flex items-center gap-1.5 px-3 h-8.5 rounded-xl border transition-all active:scale-[0.98] text-xs font-semibold shadow-2xs ${
+                  currentTab === 'saved'
+                    ? 'bg-amber-500/15 border-amber-400/50 text-amber-800'
+                    : 'bg-white/80 border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+                title={t.tabSaved}
+              >
+                <Bookmark className="w-3.5 h-3.5" />
+                <span className="hidden md:inline">{t.tabSaved}</span>
+              </button>
 
-          <button 
-            onClick={() => onSelectTab('settings')}
-            className={`flex items-center gap-1.5 px-3 h-8.5 rounded-xl border transition-all active:scale-[0.98] text-xs font-semibold shadow-2xs ${
-              currentTab === 'settings'
-                ? 'bg-school-blue text-white border-school-blue'
-                : 'bg-school-blue/10 border-school-blue/20 hover:bg-school-blue/15 text-school-blue'
-            }`}
-            title="Einstellungen & Sprachen"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Optionen</span>
-          </button>
-        </div>
+              <button 
+                onClick={() => onSelectTab('settings')}
+                className={`flex items-center gap-1.5 px-3 h-8.5 rounded-xl border transition-all active:scale-[0.98] text-xs font-semibold shadow-2xs ${
+                  currentTab === 'settings'
+                    ? 'bg-school-blue text-white border-school-blue'
+                    : 'bg-school-blue/10 border-school-blue/20 hover:bg-school-blue/15 text-school-blue'
+                }`}
+                title={t.tabSettings}
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t.tabSettings}</span>
+              </button>
+            </div>
+          );
+        })()}
       </div>
     </header>
   );

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { storageService } from '../services/storageService';
 import { speechService } from '../services/speechService';
 import { getLanguage } from '../data/languages';
+import { getUIText } from '../data/uiTranslations';
 
 export default function SavedPhrasesView() {
   const [activeTab, setActiveTab] = useState('bookmarks'); // 'bookmarks' | 'history'
   const [bookmarks, setBookmarks] = useState([]);
   const [history, setHistory] = useState([]);
   const [copiedId, setCopiedId] = useState(null);
+  const [studentProfile, setStudentProfile] = useState(() => storageService.getStudentProfile());
 
   const loadData = () => {
     setBookmarks(storageService.getBookmarks());
@@ -16,7 +18,14 @@ export default function SavedPhrasesView() {
 
   useEffect(() => {
     loadData();
+    const handleProfile = (e) => {
+      setStudentProfile(e.detail || storageService.getStudentProfile());
+    };
+    window.addEventListener('heimbuerge_student_profile_changed', handleProfile);
+    return () => window.removeEventListener('heimbuerge_student_profile_changed', handleProfile);
   }, []);
+
+  const t = getUIText(studentProfile?.nativeLang || 'uk');
 
   const handleSpeak = (text, langCode) => {
     const langObj = getLanguage(langCode);
@@ -48,10 +57,10 @@ export default function SavedPhrasesView() {
         <div>
           <h1 className="text-xl font-extrabold text-school-blue flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[24px]">bookmarks</span>
-            Gemerkt & Verlauf
+            {t.savedTitle}
           </h1>
           <p className="text-xs text-slate-500">
-            Schneller Zugriff auf gespeicherte Schulsätze
+            {t.savedSubtitle}
           </p>
         </div>
 
@@ -61,7 +70,7 @@ export default function SavedPhrasesView() {
             className="text-xs text-red-600 hover:text-red-700 font-bold flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-red-50"
           >
             <span className="material-symbols-outlined text-[16px]">delete_sweep</span>
-            <span>Verlauf leeren</span>
+            <span>{t.clearHistoryBtn}</span>
           </button>
         )}
       </div>
@@ -77,7 +86,7 @@ export default function SavedPhrasesView() {
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">star</span>
-          <span>Favoriten ({bookmarks.length})</span>
+          <span>{t.tabBookmarks} ({bookmarks.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('history')}
@@ -88,7 +97,7 @@ export default function SavedPhrasesView() {
           }`}
         >
           <span className="material-symbols-outlined text-[16px]">history</span>
-          <span>Zuletzt übersetzt ({history.length})</span>
+          <span>{t.tabHistory} ({history.length})</span>
         </button>
       </div>
 
@@ -111,7 +120,7 @@ export default function SavedPhrasesView() {
                     <button
                       onClick={() => handleRemoveBookmark(item.id)}
                       className="text-slate-400 hover:text-red-500 p-1 rounded-full transition-colors"
-                      title="Entfernen"
+                      title={t.clearBtn}
                     >
                       <span className="material-symbols-outlined text-[18px]">delete</span>
                     </button>
@@ -140,12 +149,12 @@ export default function SavedPhrasesView() {
                       className="h-8 px-3 rounded-full bg-school-teal/10 hover:bg-school-teal/20 text-school-tealDark text-xs font-bold flex items-center gap-1 transition-colors"
                     >
                       <span className="material-symbols-outlined text-[16px]">volume_up</span>
-                      <span>Anhören</span>
+                      <span>{t.listenBtn}</span>
                     </button>
                     <button
                       onClick={() => handleCopy(item.targetText, item.id)}
                       className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
-                      title="Kopieren"
+                      title={t.copyBtn}
                     >
                       <span className="material-symbols-outlined text-[16px]">
                         {isCopied ? 'check' : 'content_copy'}
@@ -160,13 +169,12 @@ export default function SavedPhrasesView() {
               <span className="material-symbols-outlined text-[48px] text-slate-300 mb-2">
                 bookmark_border
               </span>
-              <p className="text-sm font-semibold">Noch keine Favoriten gemerkt</p>
-              <p className="text-xs mt-1">Tippe auf das Lesezeichen-Symbol bei Übersetzungen, um sie hier zu sichern.</p>
+              <p className="text-sm font-semibold">{t.noBookmarksYet}</p>
+              <p className="text-xs mt-1">{t.noBookmarksSub}</p>
             </div>
           )
         ) : history.length > 0 ? (
           history.map((item) => {
-            const targetLangObj = getLanguage(item.targetLang);
             const isCopied = copiedId === item.id;
             return (
               <div
@@ -175,11 +183,11 @@ export default function SavedPhrasesView() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-400 font-semibold">
-                    {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} Uhr
+                    {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   {item.isOffline && (
                     <span className="text-[10px] bg-school-teal/15 text-school-tealDark px-2 py-0.5 rounded-full font-bold">
-                      Offline
+                      {t.offlineIndicator}
                     </span>
                   )}
                 </div>
@@ -193,12 +201,14 @@ export default function SavedPhrasesView() {
                   <button
                     onClick={() => handleSpeak(item.targetText, item.targetLang)}
                     className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center"
+                    title={t.listenBtn}
                   >
                     <span className="material-symbols-outlined text-[16px]">volume_up</span>
                   </button>
                   <button
                     onClick={() => handleCopy(item.targetText, item.id)}
                     className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center"
+                    title={t.copyBtn}
                   >
                     <span className="material-symbols-outlined text-[16px]">
                       {isCopied ? 'check' : 'content_copy'}
@@ -213,8 +223,7 @@ export default function SavedPhrasesView() {
             <span className="material-symbols-outlined text-[48px] text-slate-300 mb-2">
               history
             </span>
-            <p className="text-sm font-semibold">Noch kein Verlauf vorhanden</p>
-            <p className="text-xs mt-1">Hier siehst du deine letzten Übersetzungen.</p>
+            <p className="text-sm font-semibold">{t.noHistoryYet}</p>
           </div>
         )}
       </div>
