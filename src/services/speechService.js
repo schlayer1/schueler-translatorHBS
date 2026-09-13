@@ -221,33 +221,87 @@ export const speechService = {
     });
   },
 
-  // Play audio from Blob URL
+  // Play audio from URL with iOS WebKit watchdog and stream release
   playAudioUrl(url, rate = 1.0, onStart, onEnd, onError) {
     this.stopSpeaking();
     try {
-      const audio = new Audio(url);
+      const audio = new Audio();
+      audio.preload = 'auto';
       audio.playbackRate = Math.max(0.75, Math.min(1.3, rate));
       currentAudioElement = audio;
 
-      audio.onplay = () => onStart?.();
+      let started = false;
+      let timeoutId = null;
+
+      const cleanup = () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        if (currentAudioElement === audio) {
+          currentAudioElement = null;
+        }
+      };
+
+      // iOS Safari Watchdog: if audio stream stalls without firing onplay or onerror, fallback safely
+      timeoutId = setTimeout(() => {
+        if (!started) {
+          console.warn('[TTS] Audio playback timed out (iOS stream stall) - triggering fallback');
+          cleanup();
+          try {
+            audio.pause();
+            audio.removeAttribute('src');
+            audio.load();
+          } catch (e) {}
+          onError?.(new Error('Audio stream timed out'));
+        }
+      }, 2200);
+
+      audio.onplay = () => {
+        started = true;
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+        onStart?.();
+      };
+
       audio.onended = () => {
-        currentAudioElement = null;
+        cleanup();
+        try {
+          audio.removeAttribute('src');
+          audio.load();
+        } catch (e) {}
         onEnd?.();
       };
+
       audio.onerror = (e) => {
-        currentAudioElement = null;
+        console.warn('[TTS] Audio element error:', e);
+        cleanup();
+        try {
+          audio.removeAttribute('src');
+          audio.load();
+        } catch (err) {}
         onError?.(e);
       };
+
+      audio.src = url;
+      audio.load();
 
       const promise = audio.play();
       if (promise !== undefined) {
         promise.catch((err) => {
-          console.warn('[Audio] Autoplay / Play error:', err);
-          currentAudioElement = null;
+          console.warn('[TTS] Audio play() promise rejected:', err);
+          cleanup();
+          try {
+            audio.removeAttribute('src');
+            audio.load();
+          } catch (e) {}
           onError?.(err);
         });
       }
     } catch (err) {
+      console.warn('[TTS] playAudioUrl error:', err);
       currentAudioElement = null;
       onError?.(err);
     }
@@ -265,7 +319,18 @@ export const speechService = {
     if (!forceBrowserSynth && audioUrlCache.has(cacheKey)) {
       onStatus?.({ engine: 'Google HD-Audio (aus Speicher)', isAI: true });
       const cachedUrl = audioUrlCache.get(cacheKey);
-      this.playAudioUrl(cachedUrl, rate, onStart, onEnd, onError);
+      this.playAudioUrl(
+        cachedUrl, 
+        rate, 
+        onStart, 
+        onEnd, 
+        (playErr) => {
+          console.warn('[TTS] Cache Audio Playback Fehler, verwerfe Cache & wechsle auf Systemstimme:', playErr);
+          audioUrlCache.delete(cacheKey);
+          onStatus?.({ engine: 'Geräte-Systemstimme (Fallback)', isAI: false });
+          this.speakWithBrowserSynth({ text, lang, rate, onStart, onEnd, onError });
+        }
+      );
       return;
     }
 
@@ -278,16 +343,18 @@ export const speechService = {
         
         onStatus?.({ engine: 'Google HD-Stimme (Natürlich)', isAI: true });
         
-        // Cache the URL for zero-latency replay
-        audioUrlCache.set(cacheKey, ttsUrl);
-        
         this.playAudioUrl(
           ttsUrl,
           rate,
-          onStart,
+          () => {
+            // Only cache if playback successfully starts!
+            audioUrlCache.set(cacheKey, ttsUrl);
+            onStart?.();
+          },
           onEnd,
           (playErr) => {
             console.warn('[TTS] Google Audio Playback Fehler, wechsle auf Systemstimme:', playErr);
+            audioUrlCache.delete(cacheKey);
             onStatus?.({ engine: 'Geräte-Systemstimme (Fallback)', isAI: false });
             this.speakWithBrowserSynth({ text, lang, rate, onStart, onEnd, onError });
           }
@@ -313,6 +380,11 @@ export const speechService = {
       onError?.(new Error('Sprachausgabe nicht verfügbar'));
       return;
     }
+
+    // Preemptively cancel any pending speech queue in WebKit
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
@@ -341,12 +413,15 @@ export const speechService = {
     if (currentAudioElement) {
       try {
         currentAudioElement.pause();
-        currentAudioElement.currentTime = 0;
+        currentAudioElement.removeAttribute('src');
+        currentAudioElement.load();
       } catch (e) {}
       currentAudioElement = null;
     }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+      try {
+        window.speechSynthesis.cancel();
+      } catch (e) {}
     }
   },
 
