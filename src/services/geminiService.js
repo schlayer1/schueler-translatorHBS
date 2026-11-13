@@ -4,13 +4,22 @@ import { getLanguage } from '../data/languages';
 let cachedWorkingModel = null;
 let cachedApiVersion = 'v1beta';
 
-// Known stable model identifiers in order of preference
+// Known stable Free-Tier model identifiers in order of preference
 const TRUSTED_MODELS = [
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
-  'gemini-flash-latest',
+  'gemini-4-hydrogen',
+  'gemini-flash-lite-latest',
+  'gemini-3.5-flash-lite',
+  'gemini-3.8-flash',
   'gemini-3.6-flash',
-  'gemini-1.5-pro',
+  'gemini-flash-latest',
+];
+
+const EXCLUDED_PATTERNS = [
+  '1.0-', '1.5-', '2.0-', '2.5-', '3.7-flash', '3.1-flash-lite', '3-flash-preview',
+  '3-pro-preview', '3.1-pro', 'pro-latest', 'argon', 'carbon', '8b',
+  'embedding', 'aqa', 'tts', 'image', 'native-audio', 'transcribe',
+  'computer-use', 'robotics', 'veo', 'lyria', 'omni', 'live',
+  'nano-banana', 'deep-research', 'antigravity',
 ];
 
 // Discover working model directly from Google API
@@ -25,17 +34,14 @@ export async function discoverBestModel(key) {
       const data = await res.json();
       const models = data.models || [];
       
-      // Filter models that strictly support generateContent and are NOT deprecated/experimental 8b/2.5
+      // Filter models that strictly support generateContent and are active Free-Tier text models
       const supported = models.filter(m => {
-        const name = m.name || '';
+        const shortName = (m.name || '').toLowerCase().replace(/^models\//, '');
         const methods = m.supportedGenerationMethods || [];
-        return (
-          methods.includes('generateContent') &&
-          !name.includes('8b') &&
-          !name.includes('2.5') &&
-          !name.includes('embedding') &&
-          !name.includes('aqa')
-        );
+        if (!methods.includes('generateContent')) return false;
+        if (!shortName.startsWith('gemini-')) return false;
+        if (shortName === 'gemini-3.5-flash') return false;
+        return !EXCLUDED_PATTERNS.some(p => shortName.includes(p));
       });
 
       // Find best match among trusted models
@@ -72,7 +78,7 @@ export async function discoverBestModel(key) {
   }
 
   // Fallback defaults
-  return { model: 'gemini-2.0-flash', version: 'v1beta' };
+  return { model: 'gemini-4-hydrogen', version: 'v1beta' };
 }
 
 async function executeGeminiRequest({ key, systemInstruction, prompt, temperature = 0.2 }) {

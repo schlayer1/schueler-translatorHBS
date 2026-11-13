@@ -46,27 +46,47 @@ Zu übersetzender Text: "${text.trim()}"
 
 Antworte ausschließlich im reinen JSON-Format.`;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-    const geminiRes = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        systemInstruction: { parts: [{ text: systemInstruction }] },
-        generationConfig: {
-          responseMimeType: 'application/json',
-          temperature: 0.2,
-          maxOutputTokens: 1000,
-        },
-      }),
-    });
+    const candidateModels = [
+      'gemini-4-hydrogen',
+      'gemini-flash-lite-latest',
+      'gemini-3.5-flash-lite',
+      'gemini-3.8-flash',
+      'gemini-3.6-flash',
+      'gemini-flash-latest',
+    ];
 
-    if (!geminiRes.ok) {
-      const errBody = await geminiRes.text();
-      return res.status(geminiRes.status).json({ error: `Gemini API Fehler: ${errBody}` });
+    let data = null;
+    let lastStatus = 502;
+    let lastErrBody = '';
+
+    for (const model of candidateModels) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const geminiRes = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.2,
+            maxOutputTokens: 2048,
+          },
+        }),
+      });
+
+      if (geminiRes.ok) {
+        data = await geminiRes.json();
+        if (data?.candidates?.[0]?.content?.parts?.[0]?.text) break;
+      } else {
+        lastStatus = geminiRes.status;
+        lastErrBody = await geminiRes.text();
+      }
     }
 
-    const data = await geminiRes.json();
+    if (!data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      return res.status(lastStatus).json({ error: `Gemini API Fehler: ${lastErrBody || 'Kein Modell erreichbar'}` });
+    }
     const candidateText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!candidateText) {
       return res.status(502).json({ error: 'Keine Antwort von Gemini erhalten.' });
